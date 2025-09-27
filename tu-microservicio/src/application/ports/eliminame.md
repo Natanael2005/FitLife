@@ -1,0 +1,1 @@
+# src/application/ports\n\nDefinición de puertos de entrada/salida\n\n> Archivo temporal. Eliminar al implementar código.

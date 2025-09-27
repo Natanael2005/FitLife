@@ -1,0 +1,1 @@
+# src/infrastructure/adapters/output/external\n\nConexiones externas\n\n> Archivo temporal. Eliminar al implementar código.

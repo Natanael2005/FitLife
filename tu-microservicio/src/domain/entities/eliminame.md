@@ -1,0 +1,1 @@
+# src/domain/entities\n\nEntidades del dominio\n\n> Archivo temporal. Eliminar al implementar código.

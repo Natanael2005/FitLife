@@ -1,0 +1,1 @@
+# src/infrastructure/server\n\nServidor de la app\n\n> Archivo temporal. Eliminar al implementar código.

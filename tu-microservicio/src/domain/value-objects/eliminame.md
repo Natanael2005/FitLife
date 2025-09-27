@@ -1,0 +1,1 @@
+# src/domain/value-objects\n\nValue Objects\n\n> Archivo temporal. Eliminar al implementar código.

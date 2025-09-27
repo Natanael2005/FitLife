@@ -1,0 +1,1 @@
+# src/domain\n\nLógica de negocio\n\n> Archivo temporal. Eliminar al implementar código.

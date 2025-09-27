@@ -1,0 +1,1 @@
+# src/infrastructure/adapters/input/http/routes\n\nRutas HTTP\n\n> Archivo temporal. Eliminar al implementar código.

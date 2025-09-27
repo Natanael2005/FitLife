@@ -1,0 +1,1 @@
+# src/domain/exceptions\n\nExcepciones del dominio\n\n> Archivo temporal. Eliminar al implementar código.

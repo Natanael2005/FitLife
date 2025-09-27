@@ -1,0 +1,1 @@
+# src/infrastructure/config\n\nConfiguraciones\n\n> Archivo temporal. Eliminar al implementar código.

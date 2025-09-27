@@ -1,0 +1,1 @@
+# src/infrastructure/adapters/input\n\nAdaptadores de entrada\n\n> Archivo temporal. Eliminar al implementar código.

@@ -1,0 +1,1 @@
+# src/infrastructure\n\nImplementaciones técnicas\n\n> Archivo temporal. Eliminar al implementar código.

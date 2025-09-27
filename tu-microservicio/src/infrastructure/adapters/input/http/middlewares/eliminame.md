@@ -1,0 +1,1 @@
+# src/infrastructure/adapters/input/http/middlewares\n\nMiddlewares HTTP\n\n> Archivo temporal. Eliminar al implementar código.

@@ -1,0 +1,1 @@
+# src/shared\n\nRecursos compartidos\n\n> Archivo temporal. Eliminar al implementar código.

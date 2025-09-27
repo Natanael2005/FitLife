@@ -1,0 +1,1 @@
+# src/application\n\nCasos de uso de la aplicación\n\n> Archivo temporal. Eliminar al implementar código.

@@ -1,0 +1,1 @@
+# src/infrastructure/adapters/output/persistence\n\nPersistencia\n\n> Archivo temporal. Eliminar al implementar código.

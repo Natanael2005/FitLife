@@ -1,0 +1,1 @@
+# src/shared/utils\n\nFunciones utilitarias\n\n> Archivo temporal. Eliminar al implementar código.

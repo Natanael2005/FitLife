@@ -1,0 +1,1 @@
+# src/infrastructure/adapters/input/http\n\nCapa HTTP\n\n> Archivo temporal. Eliminar al implementar código.

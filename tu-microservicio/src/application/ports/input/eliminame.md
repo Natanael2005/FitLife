@@ -1,0 +1,1 @@
+# src/application/ports/input\n\nInterfaces de entrada\n\n> Archivo temporal. Eliminar al implementar código.

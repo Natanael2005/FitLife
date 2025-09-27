@@ -1,0 +1,1 @@
+# src/shared/constants\n\nConstantes\n\n> Archivo temporal. Eliminar al implementar código.

@@ -1,0 +1,1 @@
+# src/application/services\n\nServicios de aplicación\n\n> Archivo temporal. Eliminar al implementar código.

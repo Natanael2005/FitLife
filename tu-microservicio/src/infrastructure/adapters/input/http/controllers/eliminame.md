@@ -1,0 +1,1 @@
+# src/infrastructure/adapters/input/http/controllers\n\nControladores HTTP\n\n> Archivo temporal. Eliminar al implementar código.
