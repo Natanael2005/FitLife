@@ -1,1 +1,1 @@
-# src/application/services\n\nServicios de aplicación\n\n> Archivo temporal. Eliminar al implementar código.
+# src/application/services\n\n📂 Servicios de aplicación. Implementaciones concretas de los casos de uso. Aquí se orquesta la lógica llamando entidades del dominio, repositorios y servicios externos. Ejemplo: CrearRutinaService implementa ICrearRutinaUseCase.\n\n## 📘 Notas adicionales\n- Esta carpeta es parte de la arquitectura hexagonal.\n- Se debe eliminar este archivo al implementar el código real.\n- Mantener separación estricta de responsabilidades.

@@ -1,1 +1,1 @@
-# src/infrastructure/adapters/output/external\n\nConexiones externas\n\n> Archivo temporal. Eliminar al implementar código.
+# src/infrastructure/adapters/output/external\n\n📂 Conexiones externas. Implementaciones que consumen otros microservicios o APIs externas (ej: microservicio de notificaciones, API de nutrición).\n\n## 📘 Notas adicionales\n- Esta carpeta es parte de la arquitectura hexagonal.\n- Se debe eliminar este archivo al implementar el código real.\n- Mantener separación estricta de responsabilidades.

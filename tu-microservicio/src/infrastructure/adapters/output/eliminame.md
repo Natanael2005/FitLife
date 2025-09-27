@@ -1,1 +1,1 @@
-# src/infrastructure/adapters/output\n\nAdaptadores de salida\n\n> Archivo temporal. Eliminar al implementar código.
+# src/infrastructure/adapters/output\n\n📂 Adaptadores de salida. Implementaciones concretas de los puertos de salida. Permiten conectarse a bases de datos o servicios externos sin acoplarse directamente.\n\n## 📘 Notas adicionales\n- Esta carpeta es parte de la arquitectura hexagonal.\n- Se debe eliminar este archivo al implementar el código real.\n- Mantener separación estricta de responsabilidades.

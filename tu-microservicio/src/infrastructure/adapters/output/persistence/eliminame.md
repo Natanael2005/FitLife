@@ -1,1 +1,1 @@
-# src/infrastructure/adapters/output/persistence\n\nPersistencia\n\n> Archivo temporal. Eliminar al implementar código.
+# src/infrastructure/adapters/output/persistence\n\n📂 Persistencia de datos. Implementaciones concretas para guardar y recuperar información. Aquí viven los repositorios que usan un ORM o query builder.\n\n## 📘 Notas adicionales\n- Esta carpeta es parte de la arquitectura hexagonal.\n- Se debe eliminar este archivo al implementar el código real.\n- Mantener separación estricta de responsabilidades.

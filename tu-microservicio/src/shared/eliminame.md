@@ -1,1 +1,1 @@
-# src/shared\n\nRecursos compartidos\n\n> Archivo temporal. Eliminar al implementar código.
+# src/shared\n\n📂 Código compartido. Módulos reutilizables que no son parte del dominio, pero se usan en múltiples capas.\n\n## 📘 Notas adicionales\n- Esta carpeta es parte de la arquitectura hexagonal.\n- Se debe eliminar este archivo al implementar el código real.\n- Mantener separación estricta de responsabilidades.

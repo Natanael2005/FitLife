@@ -1,1 +1,1 @@
-# src/domain/entities\n\nEntidades del dominio\n\n> Archivo temporal. Eliminar al implementar código.
+# src/domain/entities\n\n📂 Entidades de dominio. Objetos con identidad propia, ciclo de vida y comportamiento asociado. Ejemplo: Rutina (id, lista de ejercicios, duración). Las entidades son responsables de mantener sus invariantes de negocio.\n\n## 📘 Notas adicionales\n- Esta carpeta es parte de la arquitectura hexagonal.\n- Se debe eliminar este archivo al implementar el código real.\n- Mantener separación estricta de responsabilidades.

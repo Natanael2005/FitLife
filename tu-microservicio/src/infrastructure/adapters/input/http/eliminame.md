@@ -1,1 +1,1 @@
-# src/infrastructure/adapters/input/http\n\nCapa HTTP\n\n> Archivo temporal. Eliminar al implementar código.
+# src/infrastructure/adapters/input/http\n\n📂 API HTTP. Implementa endpoints REST (o GraphQL). Su responsabilidad es recibir requests, validarlos, delegar a los casos de uso y devolver respuestas.\n\n## 📘 Notas adicionales\n- Esta carpeta es parte de la arquitectura hexagonal.\n- Se debe eliminar este archivo al implementar el código real.\n- Mantener separación estricta de responsabilidades.

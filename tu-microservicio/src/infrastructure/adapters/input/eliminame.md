@@ -1,1 +1,1 @@
-# src/infrastructure/adapters/input\n\nAdaptadores de entrada\n\n> Archivo temporal. Eliminar al implementar código.
+# src/infrastructure/adapters/input\n\n📂 Adaptadores de entrada. Transforman las solicitudes externas (HTTP, CLI, mensajes) en llamadas a los casos de uso de la aplicación.\n\n## 📘 Notas adicionales\n- Esta carpeta es parte de la arquitectura hexagonal.\n- Se debe eliminar este archivo al implementar el código real.\n- Mantener separación estricta de responsabilidades.

@@ -1,1 +1,1 @@
-# src/infrastructure/adapters/input/http/middlewares\n\nMiddlewares HTTP\n\n> Archivo temporal. Eliminar al implementar código.
+# src/infrastructure/adapters/input/http/middlewares\n\n📂 Middlewares HTTP. Lógica transversal como autenticación, validación de payloads, logging, rate limiting o manejo de errores.\n\n## 📘 Notas adicionales\n- Esta carpeta es parte de la arquitectura hexagonal.\n- Se debe eliminar este archivo al implementar el código real.\n- Mantener separación estricta de responsabilidades.

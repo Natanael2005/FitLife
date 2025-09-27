@@ -1,1 +1,1 @@
-# src/infrastructure/adapters/input/http/controllers\n\nControladores HTTP\n\n> Archivo temporal. Eliminar al implementar código.
+# src/infrastructure/adapters/input/http/controllers\n\n📂 Controladores HTTP. Contienen la lógica de entrada: parsear la request, invocar el caso de uso correcto y devolver la respuesta. Ejemplo: RutinaController expone /rutinas.\n\n## 📘 Notas adicionales\n- Esta carpeta es parte de la arquitectura hexagonal.\n- Se debe eliminar este archivo al implementar el código real.\n- Mantener separación estricta de responsabilidades.

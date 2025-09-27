@@ -1,1 +1,1 @@
-# src/infrastructure/config\n\nConfiguraciones\n\n> Archivo temporal. Eliminar al implementar código.
+# src/infrastructure/config\n\n📂 Configuración. Aquí se manejan variables de entorno, parámetros de base de datos, claves de API, etc. Ejemplo: config.ts que carga dotenv y valida variables.\n\n## 📘 Notas adicionales\n- Esta carpeta es parte de la arquitectura hexagonal.\n- Se debe eliminar este archivo al implementar el código real.\n- Mantener separación estricta de responsabilidades.
