@@ -1,1 +1,0 @@
-# src/domain/exceptions\n\n📂 Excepciones de dominio. Representan errores de negocio cuando se violan reglas. Ejemplo: RutinaInvalidaException, EjercicioNoCompatibleException.\n\n## 📘 Notas adicionales\n- Esta carpeta es parte de la arquitectura hexagonal.\n- Se debe eliminar este archivo al implementar el código real.\n- Mantener separación estricta de responsabilidades.
