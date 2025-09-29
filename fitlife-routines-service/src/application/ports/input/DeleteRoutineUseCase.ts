@@ -1,6 +1,4 @@
+// DeleteRoutineUseCase.ts
 export interface DeleteRoutineUseCase {
-  execute(payload: {
-    routineId: string;
-    userId: string;
-  }): Promise<void>;
+  execute(id: string, usuarioId: string): Promise<void>;
 }

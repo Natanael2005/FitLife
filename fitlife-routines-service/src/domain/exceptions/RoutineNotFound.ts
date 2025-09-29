@@ -1,6 +1,6 @@
 export class RoutineNotFound extends Error {
-  constructor(routineId: string) {
-    super(`Routine with id ${routineId} not found`);
+  constructor(message = 'Routine not found') {
+    super(message);
     this.name = 'RoutineNotFound';
   }
 }

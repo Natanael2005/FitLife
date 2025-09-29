@@ -1,15 +1,22 @@
 import { Router } from 'express';
 import { RoutineController } from '../controllers/RoutineController.js';
-import { asyncHandler } from '../middlewares/asyncHandler.js';
 
-export const buildRoutineRouter = (controller: RoutineController): Router => {
-  const router = Router();
+export const routineRoutes = (controller: RoutineController) => {
+  const r = Router();
 
-  router.post('/', asyncHandler(controller.create));
-  router.get('/user/:userId', asyncHandler(controller.getByUser)); // ← antes que '/:id'
-  router.get('/:id', asyncHandler(controller.getById));
-  router.put('/:id', asyncHandler(controller.update));
-  router.delete('/:id', asyncHandler(controller.delete));
+  // Privadas
+  r.post('/rutinas', controller.create);
+  r.get('/rutinas', controller.listByUser); // ?usuarioId=
+  r.get('/rutinas/:id', controller.get);
+  r.patch('/rutinas/:id', controller.update);
+  r.delete('/rutinas/:id', controller.remove);
 
-  return router;
+  // Públicas
+  r.get('/rutinas-default', controller.listPublic);
+  r.get('/rutinas-default/:id', controller.getPublic);
+
+  // Clonado
+  r.post('/rutinas/desde-default/:defaultId', controller.cloneFromPublic);
+
+  return r;
 };

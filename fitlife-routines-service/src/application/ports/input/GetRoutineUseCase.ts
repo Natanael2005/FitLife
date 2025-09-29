@@ -1,6 +1,5 @@
-import { Routine } from '../../../domain/entities/Routine.js';
-
+// GetRoutineUseCase.ts
+import type { UserRoutine } from '../../../domain/entities/Routine.js';
 export interface GetRoutineUseCase {
-  byId(routineId: string): Promise<Routine>;
-  byUser(userId: string): Promise<Routine[]>;
+  execute(id: string, usuarioId: string): Promise<UserRoutine>;
 }

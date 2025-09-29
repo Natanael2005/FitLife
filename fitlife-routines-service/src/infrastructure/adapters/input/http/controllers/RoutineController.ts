@@ -1,50 +1,79 @@
-import { Request, Response } from 'express';
+import type { Request, Response, NextFunction } from 'express';
 import { RoutineService } from '../../../../../application/services/RoutineService.js';
-import { HttpStatus } from '../../../../../shared/constants/HttpStatus.js';
+import { RoutineNotFound } from '../../../../../domain/exceptions/RoutineNotFound.js';
+import { UnauthorizedAccess } from '../../../../../domain/exceptions/UnauthorizedAccess.js';
 
 export class RoutineController {
-  constructor(private readonly service: RoutineService) {}
+  constructor(private service: RoutineService) {}
 
-  create = async (req: Request, res: Response) => {
-    const routine = await this.service.create({
-      userId: req.body.userId,
-      name: req.body.name,
-      description: req.body.description,
-      days: req.body.days,
-      exercises: req.body.exercises,
-      foods: req.body.foods,
-      isPublic: req.body.isPublic
-    });
-    return res.status(HttpStatus.CREATED).json(routine.toJSON());
+  create = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const out = await this.service.execute(req.body);
+      res.status(201).json(out);
+    } catch (e) { next(e); }
   };
 
-  getById = async (req: Request, res: Response) => {
-    const routine = await this.service.getById(req.params.id);
-    return res.status(HttpStatus.OK).json(routine.toJSON());
+  listByUser = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const usuarioId = String(req.query.usuarioId || '');
+      if (!usuarioId) return res.status(400).json({ error: 'usuarioId requerido' });
+      const out = await this.service.execute(usuarioId);
+      res.json(out);
+    } catch (e) { next(e); }
   };
 
-  getByUser = async (req: Request, res: Response) => {
-    const routines = await this.service.getByUser(req.params.userId);
-    return res.status(HttpStatus.OK).json(routines.map(r => r.toJSON()));
+  get = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const id = req.params.id;
+      const usuarioId = String(req.query.usuarioId || '');
+      if (!usuarioId) return res.status(400).json({ error: 'usuarioId requerido' });
+      const out = await this.service.execute(id, usuarioId);
+      res.json(out);
+    } catch (e) { next(e); }
   };
 
-  update = async (req: Request, res: Response) => {
-    const routine = await this.service.update({
-      routineId: req.params.id,
-      userId: req.body.userId, // en producción vendrá del token
-      name: req.body.name,
-      description: req.body.description,
-      days: req.body.days,
-      exercises: req.body.exercises,
-      foods: req.body.foods,
-      isPublic: req.body.isPublic,
-      isActive: req.body.isActive
-    });
-    return res.status(HttpStatus.OK).json(routine.toJSON());
+  update = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const id = req.params.id;
+      const usuarioId = String(req.query.usuarioId || '');
+      if (!usuarioId) return res.status(400).json({ error: 'usuarioId requerido' });
+      const out = await this.service.execute(id, usuarioId, req.body);
+      res.json(out);
+    } catch (e) { next(e); }
   };
 
-  delete = async (req: Request, res: Response) => {
-    await this.service.delete({ routineId: req.params.id, userId: req.body.userId });
-    return res.status(HttpStatus.NO_CONTENT).send();
+  remove = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const id = req.params.id;
+      const usuarioId = String(req.query.usuarioId || '');
+      if (!usuarioId) return res.status(400).json({ error: 'usuarioId requerido' });
+      await this.service.delete(id, usuarioId);
+      res.status(204).end();
+    } catch (e) { next(e); }
+  };
+
+  listPublic = async (_req: Request, res: Response, next: NextFunction) => {
+    try {
+      const out = await this.service.listPublic();
+      res.json(out);
+    } catch (e) { next(e); }
+  };
+
+  getPublic = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const out = await this.service.getPublic(req.params.id);
+      if (!out) return res.status(404).json({ error: 'No encontrada' });
+      res.json(out);
+    } catch (e) { next(e); }
+  };
+
+  cloneFromPublic = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { defaultId } = req.params;
+      const { usuario_id, nombre, dias } = req.body || {};
+      if (!usuario_id) return res.status(400).json({ error: 'usuario_id requerido' });
+      const out = await this.service.cloneFromPublic(defaultId, usuario_id, { nombre, dias });
+      res.status(201).json(out);
+    } catch (e) { next(e); }
   };
 }
