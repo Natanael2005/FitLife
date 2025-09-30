@@ -1,0 +1,9 @@
+{
+  "compilerOptions": {
+    // other options
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "forceConsistentCasingInFileNames": true,
+    "strict": true
+  }
+}
