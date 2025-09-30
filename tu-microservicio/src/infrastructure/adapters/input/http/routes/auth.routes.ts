@@ -2,7 +2,7 @@ import { Router } from 'express';
 import { z } from 'zod';
 import { firebaseAuth } from '../middlewares/firebaseAuth';
 import { getDataSource } from '../../../../config/datasource';
-import { User } from '../../../output/persistence/entities/User';
+import { User } from '../../../../../domain/entities/User';
 
 const r = Router();
 
@@ -22,8 +22,9 @@ r.post('/register-basic', firebaseAuth, async (req, res) => {
   const ds = await getDataSource();
   const repo = ds.getRepository(User);
 
-  // upsert por firebaseUid
-  let user = await repo.findOne({ where: { firebaseUid } });
+  // Buscar por UID o email para cubrir ambos casos
+  let user = await repo.findOne({ where: [{ firebaseUid }, { email }] });
+  const isNew = !user;
 
   if (!user) {
     user = repo.create({
@@ -31,18 +32,18 @@ r.post('/register-basic', firebaseAuth, async (req, res) => {
       email,
       firstName: parse.data.firstName,
       lastName:  parse.data.lastName,
-      gender:    parse.data.gender,
+      gender:    parse.data.gender ?? null,
       profileCompleted: false
     });
   } else {
     user.firstName = parse.data.firstName;
     user.lastName  = parse.data.lastName;
-    user.gender    = parse.data.gender;
-    // NO tocamos profileCompleted aquí
+    user.gender    = parse.data.gender ?? null;
+    if (email && email !== user.email) user.email = email; // sincroniza email si cambió en Firebase
   }
 
   user = await repo.save(user);
-  return res.status(201).json({ id: user.id, profile_completed: user.profileCompleted });
+  return res.status(isNew ? 201 : 200).json({ id: user.id, profile_completed: user.profileCompleted });
 });
 
 // GET /api/auth/profile

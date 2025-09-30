@@ -1,5 +1,10 @@
 import { DataSource } from 'typeorm';
-import { User } from '../adapters/output/persistence/entities/User';
+import { User } from '../../domain/entities/User';
+import { Allergy } from '../../domain/entities/Allergy';
+import { MedicalCondition } from '../../domain/entities/MedicalCondition';
+import { UserAllergy } from '../../domain/entities/UserAllergy';
+import { UserMedicalCondition } from '../../domain/entities/UserMedicalCondition';
+import { UserHealthData } from '../../domain/entities/UserHealthData';
 
 let ds: DataSource | null = null;
 
@@ -12,8 +17,15 @@ export async function getDataSource() {
     username: process.env.DB_USER || 'postgres',
     password: process.env.DB_PASS || 'postgres',
     database: process.env.DB_NAME || 'fitlife',
-    entities: [User],
-    synchronize: false, // usa migraciones en proyecto real; en dev puedes poner true
+    entities: [
+      User,
+      Allergy,
+      MedicalCondition,
+      UserAllergy,
+      UserMedicalCondition,
+      UserHealthData,
+    ],
+    synchronize: false, // en dev: true si no tienes migraciones aún
     logging: false
   });
   if (!ds.isInitialized) await ds.initialize();

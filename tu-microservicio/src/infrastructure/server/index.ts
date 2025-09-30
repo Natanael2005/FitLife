@@ -3,7 +3,7 @@ import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import { getDataSource } from '../config/datasource';
-// 👇 AGREGA ESTA LÍNEA
+import { seedCatalogs } from '../config/seedCatalogs';
 import { registerRoutes } from '../adapters/input/http/routes';
 
 dotenv.config();
@@ -11,6 +11,7 @@ dotenv.config();
 async function main() {
   try {
     await getDataSource();
+    await seedCatalogs(await getDataSource());
     console.log('✅ DB conectada');
   } catch (e) {
     console.error('❌ No se pudo conectar a la DB:', (e as Error).message);
