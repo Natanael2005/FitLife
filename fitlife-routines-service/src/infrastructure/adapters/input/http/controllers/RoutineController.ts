@@ -2,13 +2,15 @@ import type { Request, Response, NextFunction } from 'express';
 import { RoutineService } from '../../../../../application/services/RoutineService.js';
 import { RoutineNotFound } from '../../../../../domain/exceptions/RoutineNotFound.js';
 import { UnauthorizedAccess } from '../../../../../domain/exceptions/UnauthorizedAccess.js';
+import { InvalidRoutineData } from '../../../../../domain/exceptions/InvalidRoutineData.js';
 
 export class RoutineController {
   constructor(private service: RoutineService) {}
 
+  // ===== Privadas =====
   create = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const out = await this.service.execute(req.body);
+      const out = await this.service.createUserRoutine(req.body);
       res.status(201).json(out);
     } catch (e) { next(e); }
   };
@@ -16,8 +18,7 @@ export class RoutineController {
   listByUser = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const usuarioId = String(req.query.usuarioId || '');
-      if (!usuarioId) return res.status(400).json({ error: 'usuarioId requerido' });
-      const out = await this.service.execute(usuarioId);
+      const out = await this.service.listUserRoutines(usuarioId);
       res.json(out);
     } catch (e) { next(e); }
   };
@@ -26,8 +27,7 @@ export class RoutineController {
     try {
       const id = req.params.id;
       const usuarioId = String(req.query.usuarioId || '');
-      if (!usuarioId) return res.status(400).json({ error: 'usuarioId requerido' });
-      const out = await this.service.execute(id, usuarioId);
+      const out = await this.service.getUserRoutine(id, usuarioId);
       res.json(out);
     } catch (e) { next(e); }
   };
@@ -36,8 +36,7 @@ export class RoutineController {
     try {
       const id = req.params.id;
       const usuarioId = String(req.query.usuarioId || '');
-      if (!usuarioId) return res.status(400).json({ error: 'usuarioId requerido' });
-      const out = await this.service.execute(id, usuarioId, req.body);
+      const out = await this.service.updateUserRoutine(id, usuarioId, req.body);
       res.json(out);
     } catch (e) { next(e); }
   };
@@ -46,12 +45,12 @@ export class RoutineController {
     try {
       const id = req.params.id;
       const usuarioId = String(req.query.usuarioId || '');
-      if (!usuarioId) return res.status(400).json({ error: 'usuarioId requerido' });
-      await this.service.delete(id, usuarioId);
+      await this.service.deleteUserRoutine(id, usuarioId);
       res.status(204).end();
     } catch (e) { next(e); }
   };
 
+  // ===== Públicas (lectura + clon) =====
   listPublic = async (_req: Request, res: Response, next: NextFunction) => {
     try {
       const out = await this.service.listPublic();
@@ -71,9 +70,31 @@ export class RoutineController {
     try {
       const { defaultId } = req.params;
       const { usuario_id, nombre, dias } = req.body || {};
-      if (!usuario_id) return res.status(400).json({ error: 'usuario_id requerido' });
       const out = await this.service.cloneFromPublic(defaultId, usuario_id, { nombre, dias });
       res.status(201).json(out);
+    } catch (e) { next(e); }
+  };
+
+  // ===== Admin (CRUD públicas) =====
+  createPublic = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const out = await this.service.createPublic(req.body);
+      res.status(201).json(out);
+    } catch (e) { next(e); }
+  };
+
+  updatePublic = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const out = await this.service.updatePublic(req.params.id, req.body);
+      if (!out) return res.status(404).json({ error: 'No encontrada' });
+      res.json(out);
+    } catch (e) { next(e); }
+  };
+
+  deletePublic = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      await this.service.deletePublic(req.params.id);
+      res.status(204).end();
     } catch (e) { next(e); }
   };
 }
