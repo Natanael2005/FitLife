@@ -1,12 +1,14 @@
 import { Router } from 'express';
-import { HistoryController } from '../controllers/HistoryController';
+import { WorkoutHistoryController } from '../controllers/WorkoutHistoryController';
 
-export function createHistoryRoutes(historyController: HistoryController): Router {
+export function createHistoryRoutes(controller: WorkoutHistoryController): Router {
   const router = Router();
 
-  router.post('/activity', historyController.saveActivity.bind(historyController));
-  router.get('/user/:userId', historyController.getHistory.bind(historyController));
-  router.get('/user/:userId/summary', historyController.getSummary.bind(historyController));
+  router.get('/user/:userId', controller.getHistory.bind(controller));
+  router.post('/user/:userId', controller.addWorkout.bind(controller));
+  router.get('/user/:userId/total', controller.getTotalWorkouts.bind(controller));
+  router.delete('/:id', controller.deleteWorkout.bind(controller));
 
   return router;
 }
+

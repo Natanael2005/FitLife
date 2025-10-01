@@ -6,3 +6,4 @@ export interface UserStatsRepository {
   update(userId: string, updates: Partial<UserStats>): Promise<UserStats>;
   delete(userId: string): Promise<void>;
 }
+

@@ -7,9 +7,8 @@ export class PostgresUserStatsRepository implements UserStatsRepository {
 
   async findByUserId(userId: string): Promise<UserStats | null> {
     const query = `
-      SELECT id, user_id, current_weight, target_weight, current_height, 
-             workout_streak, total_workouts, total_calories_burned, 
-             average_workout_duration, bmi, last_updated, weekly_goal_progress, created_at
+      SELECT id, user_id, current_weight, current_height, 
+             bmi, last_updated, created_at
       FROM user_stats 
       WHERE user_id = $1
     `;
@@ -25,15 +24,9 @@ export class PostgresUserStatsRepository implements UserStatsRepository {
       row.id,
       row.user_id,
       row.current_weight,
-      row.target_weight,
       row.current_height,
-      row.workout_streak,
-      row.total_workouts,
-      row.total_calories_burned,
-      row.average_workout_duration,
       row.bmi,
       row.last_updated,
-      row.weekly_goal_progress,
       row.created_at
     );
   }
@@ -41,25 +34,17 @@ export class PostgresUserStatsRepository implements UserStatsRepository {
   async save(userStats: Omit<UserStats, 'id' | 'createdAt'>): Promise<UserStats> {
     const query = `
       INSERT INTO user_stats (
-        user_id, current_weight, target_weight, current_height, 
-        workout_streak, total_workouts, total_calories_burned, 
-        average_workout_duration, bmi, last_updated, weekly_goal_progress
-      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
+        user_id, current_weight, current_height, bmi, last_updated
+      ) VALUES ($1, $2, $3, $4, $5)
       RETURNING *
     `;
 
     const values = [
       userStats.userId,
       userStats.currentWeight,
-      userStats.targetWeight,
       userStats.currentHeight,
-      userStats.workoutStreak,
-      userStats.totalWorkouts,
-      userStats.totalCaloriesBurned,
-      userStats.averageWorkoutDuration,
       userStats.bmi,
-      userStats.lastUpdated,
-      userStats.weeklyGoalProgress
+      userStats.lastUpdated
     ];
 
     const result = await this.pool.query(query, values);
@@ -69,50 +54,31 @@ export class PostgresUserStatsRepository implements UserStatsRepository {
       row.id,
       row.user_id,
       row.current_weight,
-      row.target_weight,
       row.current_height,
-      row.workout_streak,
-      row.total_workouts,
-      row.total_calories_burned,
-      row.average_workout_duration,
       row.bmi,
       row.last_updated,
-      row.weekly_goal_progress,
       row.created_at
     );
   }
 
   async update(userId: string, updates: Partial<UserStats>): Promise<UserStats> {
-    const setClause: string[] = [];
-    const values: (string | number | Date)[] = [];
-    let paramCount = 1;
-
-    Object.entries(updates).forEach(([key, value]) => {
-          if (
-            value !== undefined &&
-            key !== 'id' &&
-            key !== 'userId' &&
-            key !== 'createdAt' &&
-            typeof value !== 'function'
-          ) {
-            const dbColumn = this.camelToSnake(key);
-            setClause.push(`${dbColumn} = $${paramCount++}`);
-            values.push(value);
-          }
-        });
-
-    if (setClause.length === 0) {
-      throw new Error('No fields to update');
-    }
-
-    values.push(userId);
-
     const query = `
       UPDATE user_stats 
-      SET ${setClause.join(', ')}
-      WHERE user_id = $${paramCount}
+      SET current_weight = COALESCE($1, current_weight),
+          current_height = COALESCE($2, current_height),
+          bmi = COALESCE($3, bmi),
+          last_updated = $4
+      WHERE user_id = $5
       RETURNING *
     `;
+
+    const values = [
+      updates.currentWeight,
+      updates.currentHeight,
+      updates.bmi,
+      updates.lastUpdated || new Date(),
+      userId
+    ];
 
     const result = await this.pool.query(query, values);
     
@@ -125,15 +91,9 @@ export class PostgresUserStatsRepository implements UserStatsRepository {
       row.id,
       row.user_id,
       row.current_weight,
-      row.target_weight,
       row.current_height,
-      row.workout_streak,
-      row.total_workouts,
-      row.total_calories_burned,
-      row.average_workout_duration,
       row.bmi,
       row.last_updated,
-      row.weekly_goal_progress,
       row.created_at
     );
   }
@@ -142,8 +102,19 @@ export class PostgresUserStatsRepository implements UserStatsRepository {
     const query = 'DELETE FROM user_stats WHERE user_id = $1';
     await this.pool.query(query, [userId]);
   }
-
-  private camelToSnake(str: string): string {
-    return str.replace(/[A-Z]/g, letter => `_${letter.toLowerCase()}`);
-  }
 }
+
+export const createUserStatsTable = `
+  CREATE TABLE IF NOT EXISTS user_stats (
+    id SERIAL PRIMARY KEY,
+    user_id VARCHAR(255) UNIQUE NOT NULL,
+    current_weight DECIMAL(5,2) NOT NULL,
+    current_height DECIMAL(5,2) NOT NULL,
+    bmi DECIMAL(4,2) NOT NULL,
+    last_updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+  );
+
+  CREATE INDEX IF NOT EXISTS idx_user_stats_user_id ON user_stats(user_id);
+  CREATE INDEX IF NOT EXISTS idx_user_stats_last_updated ON user_stats(last_updated);
+`;

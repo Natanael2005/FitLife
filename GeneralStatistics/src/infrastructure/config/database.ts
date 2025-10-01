@@ -4,7 +4,7 @@ export const createPool = (): Pool => {
   return new Pool({
     host: process.env.DB_HOST || 'localhost',
     port: parseInt(process.env.DB_PORT || '5432'),
-    database: process.env.DB_NAME || 'fitlife_general_stats',
+    database: process.env.DB_NAME || 'fitlife',
     user: process.env.DB_USER || 'postgres',
     password: process.env.DB_PASSWORD || 'password',
     max: 20,
