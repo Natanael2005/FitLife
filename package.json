@@ -1,5 +1,13 @@
 {
+  "scripts": {
+    "start-notifications": "ts-node notifications-service/src/server.ts",
+    "start-user-profiles": "ts-node user-profile-service/src/server.ts",
+    "dev": "nodemon --watch 'src/**/*.ts' --exec 'ts-node' src/server.ts",
+    "build": "tsc",
+    "lint": "eslint . --ext .ts"
+  },
   "dependencies": {
+    "dotenv": "^17.2.3",
     "express": "^5.1.0",
     "pg": "^8.16.3",
     "reflect-metadata": "^0.2.2",
