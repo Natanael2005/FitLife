@@ -5,15 +5,15 @@ import { RoutineNotFound } from '../../domain/exceptions/RoutineNotFound.js';
 import { UnauthorizedAccess } from '../../domain/exceptions/UnauthorizedAccess.js';
 import { InvalidRoutineData } from '../../domain/exceptions/InvalidRoutineData.js';
 
-const Days = ['lunes','martes','miercoles','jueves','viernes','sabado','domingo'] as const;
+const Days = ['lunes', 'martes', 'miercoles', 'jueves', 'viernes', 'sabado', 'domingo'] as const;
 
 const ExerciseSchema = z.object({
   id: z.string().min(1),
   nombre: z.string().min(1),
   categoria: z.string().min(1),
   contraindicaciones: z.array(z.string()),
-  impacto: z.enum(['BAJO','MEDIO','ALTO']),
-  nivel_minimo: z.enum(['PRINCIPIANTE','INTERMEDIO','AVANZADO']),
+  impacto: z.enum(['BAJO', 'MEDIO', 'ALTO']),
+  nivel_minimo: z.enum(['PRINCIPIANTE', 'INTERMEDIO', 'AVANZADO']),
   series_recomendadas: z.number().int().nonnegative(),
   repeticiones_recomendadas: z.number().int().positive()
 });
@@ -50,7 +50,7 @@ function dedupeById<T extends { id: string }>(arr: T[]): T[] {
 }
 
 export class RoutineService {
-  constructor(private repo: RoutineRepository) {}
+  constructor(private repo: RoutineRepository) { }
 
   // =============== PRIVADAS ===============
 
@@ -73,26 +73,34 @@ export class RoutineService {
     if (!r) throw new RoutineNotFound();
     if (r.usuario_id !== usuarioId) throw new UnauthorizedAccess();
     return r;
-    }
+  }
 
   async updateUserRoutine(
     id: string,
     usuarioId: string,
-    patch: Partial<Omit<UserRoutine,'id'|'usuario_id'>>
+    patch: Partial<Omit<UserRoutine, 'id' | 'usuario_id'>>
   ): Promise<UserRoutine> {
     const current = await this.repo.getUserRoutine(id);
     if (!current) throw new RoutineNotFound();
     if (current.usuario_id !== usuarioId) throw new UnauthorizedAccess();
 
-    const cleanedPatch: Partial<Omit<UserRoutine,'id'|'usuario_id'>> = {
+    // Normalizamos el patch (dedupe si vienen arrays)
+    const cleanedPatch: Partial<Omit<UserRoutine, 'id' | 'usuario_id'>> = {
       ...patch,
       ejercicios: patch.ejercicios ? dedupeById(patch.ejercicios) : undefined,
       alimentos: patch.alimentos ? dedupeById(patch.alimentos) : undefined
     };
 
-    const merged: UserRoutine = { ...current, ...cleanedPatch } as UserRoutine;
+    // Fallbacks explícitos a los valores actuales para evitar undefined en validación
+    const merged: UserRoutine = {
+      ...current,
+      ...cleanedPatch,
+      dias: cleanedPatch.dias ?? current.dias ?? [],
+      ejercicios: cleanedPatch.ejercicios ?? current.ejercicios ?? [],
+      alimentos: cleanedPatch.alimentos ?? current.alimentos ?? []
+    };
 
-    // Validar shape final
+    // Validamos el shape final
     UserRoutineSchema.parse({
       usuario_id: merged.usuario_id,
       nombre: merged.nombre,
@@ -101,10 +109,17 @@ export class RoutineService {
       alimentos: merged.alimentos
     });
 
-    const updated = await this.repo.updateUserRoutine(id, cleanedPatch);
+    // Importante: pasar al repo SOLO los campos del patch limpio
+    const updated = await this.repo.updateUserRoutine(id, {
+      nombre: cleanedPatch.nombre,
+      dias: cleanedPatch.dias,
+      ejercicios: cleanedPatch.ejercicios,
+      alimentos: cleanedPatch.alimentos
+    });
     if (!updated) throw new InvalidRoutineData('No se pudo actualizar');
     return updated;
   }
+
 
   async deleteUserRoutine(id: string, usuarioId: string): Promise<void> {
     const current = await this.repo.getUserRoutine(id);
@@ -123,7 +138,7 @@ export class RoutineService {
     return this.repo.getPublicRoutine(id);
   }
 
-  cloneFromPublic(defaultId: string, usuarioId: string, overrides?: Partial<Pick<UserRoutine,'nombre'|'dias'>>) {
+  cloneFromPublic(defaultId: string, usuarioId: string, overrides?: Partial<Pick<UserRoutine, 'nombre' | 'dias'>>) {
     if (!usuarioId) throw new InvalidRoutineData('usuario_id requerido');
     return this.repo.clonePublicToUser(defaultId, usuarioId, overrides);
   }
