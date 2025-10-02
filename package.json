@@ -2,6 +2,7 @@
   "scripts": {
     "start-notifications": "ts-node notifications-service/src/server.ts",
     "start-user-profiles": "ts-node user-profile-service/src/server.ts",
+    "build:swagger": "tsc user-profile-service/src/infraestructure/config/swagger.config.ts",
     "dev": "nodemon --watch 'src/**/*.ts' --exec 'ts-node' src/server.ts",
     "build": "tsc",
     "lint": "eslint . --ext .ts"

@@ -20,7 +20,9 @@ export class NotificationServiceImpl implements NotificationService {
     const scheduledNotifications = await this.notificationRepository.findScheduled();
     for (const notification of scheduledNotifications) {
       // Lógica para enviar la notificación
-      // ...
+     // Se debe obtener el token del usuario desde el servicio de perfiles de usuario, y luego, usando push notifications, enviar la notificación.
+      // Aquí se omite la lógica de envío real por simplicidad.
+      
       notification.sentAt = new Date();
       notification.status = 'sent';
       await this.notificationRepository.update(notification);
