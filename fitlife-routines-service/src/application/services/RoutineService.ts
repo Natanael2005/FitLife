@@ -5,17 +5,20 @@ import { RoutineNotFound } from '../../domain/exceptions/RoutineNotFound.js';
 import { UnauthorizedAccess } from '../../domain/exceptions/UnauthorizedAccess.js';
 import { InvalidRoutineData } from '../../domain/exceptions/InvalidRoutineData.js';
 
-const Days = ['lunes', 'martes', 'miercoles', 'jueves', 'viernes', 'sabado', 'domingo'] as const;
+const Days = ['LUNES', 'MARTES', 'MIERCOLES', 'JUEVES', 'VIERNES', 'SABADO', 'DOMINGO'] as const;
 
 const ExerciseSchema = z.object({
   id: z.string().min(1),
   nombre: z.string().min(1),
   categoria: z.string().min(1),
   contraindicaciones: z.array(z.string()),
-  impacto: z.enum(['BAJO', 'MEDIO', 'ALTO']),
-  nivel_minimo: z.enum(['PRINCIPIANTE', 'INTERMEDIO', 'AVANZADO']),
+  nivel: z.enum(['BAJO', 'INTERMEDIO', 'AVANZADO']),
   series_recomendadas: z.number().int().nonnegative(),
-  repeticiones_recomendadas: z.number().int().positive()
+  repeticiones_recomendadas: z.number().int().positive(),
+  gifUrl: z.string(),
+  musculo_principal: z.string(),
+  musculo_secundario: z.string(),
+  instrucciones: z.array(z.string()).optional()
 });
 
 const FoodSchema = z.object({

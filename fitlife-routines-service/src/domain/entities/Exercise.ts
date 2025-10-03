@@ -3,8 +3,11 @@ export interface ExerciseSnapshot {
   nombre: string;
   categoria: string;
   contraindicaciones: string[];
-  impacto: 'BAJO' | 'MEDIO' | 'ALTO';
-  nivel_minimo: 'PRINCIPIANTE' | 'INTERMEDIO' | 'AVANZADO';
+  nivel: 'BAJO' | 'INTERMEDIO' | 'AVANZADO';
   series_recomendadas: number;
   repeticiones_recomendadas: number;
+  gifUrl: string;
+  musculo_principal: string;
+  musculo_secundario: string;
+  instrucciones?: string[];
 }

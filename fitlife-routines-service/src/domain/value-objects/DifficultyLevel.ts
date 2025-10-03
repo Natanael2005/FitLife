@@ -1,5 +1,5 @@
 export enum DifficultyLevelType {
-  PRINCIPIANTE = 'PRINCIPIANTE',
+  BAJO = 'BAJO',
   INTERMEDIO = 'INTERMEDIO',
   AVANZADO = 'AVANZADO'
 }
@@ -20,7 +20,7 @@ export class DifficultyLevel {
 
   getNumericLevel(): number {
     const levels: Record<DifficultyLevelType, number> = {
-      [DifficultyLevelType.PRINCIPIANTE]: 1,
+      [DifficultyLevelType.BAJO]: 1,
       [DifficultyLevelType.INTERMEDIO]: 2,
       [DifficultyLevelType.AVANZADO]: 3
     };
