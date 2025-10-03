@@ -27,7 +27,7 @@ type SeedRoutine = {
 
 const EXERCISES: SeedExercise[] = [
   { nombre:'Press de Banca', categoria:'Pecho',
-    contraindicaciones:['PROBLEMAS_CARDIACOS','HIPERTENSION_NO_CONTROLADA','ARRITMIAS','INSUFICIENCIA_CARDIACA','CIRUGIA_RECIENTE','FRACTURA_RECIENTE','HERNIA_DISCAL','OSTEOPOROSIS_SEVERA','EMBARAZO_RIESGO','TROMBOSIS_RECIENTE','EPOC','ASMA','LESION_ESPALDA','LESION_HOMBRO'].map(U),
+    contraindicaciones:['PROBLEMAS_CARDIACOS','TROMBOSIS_RECIENTE','ASMA','LESION_ESPALDA','LESION_HOMBRO'].map(U),
     nivel:'INTERMEDIO', series_recomendadas:4, repeticiones_recomendadas:10 },
   { nombre:'Sentadilla', categoria:'Piernas',
     contraindicaciones:['LESION_RODILLA','FRACTURA_RECIENTE','OSTEOPOROSIS_SEVERA','LUMBALGIA','HERNIA_DISCAL'].map(U),
