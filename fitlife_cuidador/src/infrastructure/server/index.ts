@@ -4,6 +4,7 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import { getDataSource } from '../config/datasource';
 import { seedCatalogs } from '../config/seedCatalogs';
+import { seedDemoData } from '../config/seedDemoData';
 import { registerRoutes } from '../adapters/input/http/routes';
 
 dotenv.config();
@@ -12,6 +13,7 @@ async function main() {
   try {
     await getDataSource();
     await seedCatalogs(await getDataSource());
+    await seedDemoData(await getDataSource());
     console.log('✅ DB conectada');
   } catch (e) {
     console.error('❌ No se pudo conectar a la DB:', (e as Error).message);

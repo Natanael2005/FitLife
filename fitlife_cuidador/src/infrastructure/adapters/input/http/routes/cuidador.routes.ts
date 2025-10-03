@@ -15,6 +15,10 @@ import {
 
 const r = Router();
 
+const up = (s?: string | null) => (s ?? '').toUpperCase();
+const upArr = (a?: string[] | null) => (a ?? []).map(x => (x ?? '').toUpperCase());
+const toNivelArray = (nivel: 'PRINCIPIANTE'|'INTERMEDIO'|'AVANZADO') => [nivel];
+
 // ===== DI simple por request =====
 async function buildService() {
   const ds = await getDataSource();
@@ -58,24 +62,127 @@ const RoutineSchema = z.object({
 r.get('/ejercicios-aptos', async (req, res) => {
   const parse = qSchema.safeParse(req.query);
   if (!parse.success) return res.status(400).json({ error: 'VALIDATION_ERROR', details: parse.error.flatten() });
+
   const svc = await buildService();
-  const out = await svc.getAllowedExercises(parse.data.userId);
+  const ejercicios = await svc.getAllowedExercises(parse.data.userId);
+
+  const out = ejercicios.map(e => ({
+    id: e.id,
+    nombre: e.nombre,
+    categoria: e.categoria ?? null,
+    contraindicaciones: upArr(e.contraindicaciones),
+    nivel_minimo: toNivelArray(e.nivel as any),
+    series_recomendadas: e.series_recomendadas ?? null,
+    repeticiones_recomendadas: e.repeticiones_recomendadas ?? null,
+    gifUrl: "",
+    musculo_principal: "",
+    musculo_secundario: "",
+    instrucciones: [] as string[],
+  }));
+
   res.json(out);
 });
 
 r.get('/alimentos-aptos', async (req, res) => {
   const parse = qSchema.safeParse(req.query);
   if (!parse.success) return res.status(400).json({ error: 'VALIDATION_ERROR', details: parse.error.flatten() });
+
   const svc = await buildService();
-  const out = await svc.getAllowedFoods(parse.data.userId);
+  const alimentos = await svc.getAllowedFoods(parse.data.userId);
+
+  const out = alimentos.map(f => ({
+    id: f.id,
+    nombre: f.nombre,
+    categoria: f.categoria ?? null,
+    alergenos: upArr(f.alergenos),
+    imagen: "",
+    calorias_por_100g: null as number | null,
+    proteinas: null as number | null,
+  }));
+
   res.json(out);
 });
+
+r.get('/aptos', async (req, res) => {
+  const parsed = qSchema.safeParse(req.query);
+  if (!parsed.success) {
+    return res.status(400).json({ error: 'VALIDATION_ERROR', details: parsed.error.flatten() });
+  }
+
+  try {
+    const svc = await buildService();
+    const { ejercicios, alimentos } = await svc.getAllowedForBuilder(parsed.data.userId);
+
+    const ejerciciosOut = ejercicios.map(e => ({
+      id: e.id,
+      nombre: e.nombre,
+      categoria: e.categoria ?? null,
+      contraindicaciones: upArr(e.contraindicaciones),   // UPPER
+      nivel_minimo: toNivelArray(e.nivel as any),        // array
+      series_recomendadas: e.series_recomendadas ?? null,
+      repeticiones_recomendadas: e.repeticiones_recomendadas ?? null,
+      gifUrl: "",
+      musculo_principal: "",
+      musculo_secundario: "",
+      instrucciones: [] as string[],
+    }));
+
+    const alimentosOut = alimentos.map(f => ({
+      id: f.id,
+      nombre: f.nombre,
+      categoria: f.categoria ?? null,
+      alergenos: upArr(f.alergenos),           // UPPER
+      imagen: "",
+      calorias_por_100g: null as number | null,
+      proteinas: null as number | null,
+    }));
+
+    res.json({ ejercicios: ejerciciosOut, alimentos: alimentosOut });
+  } catch (err: any) {
+    if (err?.code === 'NOT_FOUND') {
+      return res.status(404).json({ error: 'NOT_FOUND', message: 'Ficha de salud no encontrada' });
+    }
+    console.error('[cuidador/aptos] error', err);
+    return res.status(500).json({ error: 'INTERNAL_ERROR' });
+  }
+});
+
 
 r.get('/rutinas-aptas', async (req, res) => {
   const parse = qSchema.safeParse(req.query);
   if (!parse.success) return res.status(400).json({ error: 'VALIDATION_ERROR', details: parse.error.flatten() });
+
   const svc = await buildService();
-  const out = await svc.getAllowedRoutines(parse.data.userId);
+  const rutinas = await svc.getAllowedRoutines(parse.data.userId);
+
+  const out = rutinas.map(r => ({
+    id: r.id,
+    nombre: r.nombre,
+    dias: r.dias ?? [],
+    ejercicios: r.ejercicios.map(e => ({
+      id: e.id,
+      nombre: e.nombre,
+      categoria: e.categoria ?? null,
+      contraindicaciones: upArr(e.contraindicaciones),
+      nivel_minimo: toNivelArray(e.nivel as any),
+      series_recomendadas: e.series_recomendadas ?? null,
+      repeticiones_recomendadas: e.repeticiones_recomendadas ?? null,
+      gifUrl: "",
+      musculo_principal: "",
+      musculo_secundario: "",
+      instrucciones: [] as string[],
+    })),
+    alimentos: r.alimentos.map(f => ({
+      id: f.id,
+      nombre: f.nombre,
+      categoria: f.categoria ?? null,
+      alergenos: upArr(f.alergenos),
+      imagen: "",
+      calorias_por_100g: null as number | null,
+      proteinas: null as number | null,
+    })),
+  }));
+
   res.json(out);
 });
 

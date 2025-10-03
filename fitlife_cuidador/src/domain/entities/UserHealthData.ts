@@ -25,6 +25,7 @@ export class UserHealthData {
   @Column('varchar', { length: 20 })
   categoria_imc!: CategoriaIMC;
 
-  @Column('varchar', { length: 20 })
-  nivel!: Nivel;
+  @Column('varchar', { name: 'nivel', length: 20 })
+  nivel!: 'BAJO' | 'INTERMEDIO' | 'ALTO';
 }
+

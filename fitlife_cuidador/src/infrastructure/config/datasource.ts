@@ -1,4 +1,5 @@
 import { DataSource } from 'typeorm';
+import 'dotenv/config';
 import { User } from '../../domain/entities/User';
 import { Allergy } from '../../domain/entities/Allergy';
 import { MedicalCondition } from '../../domain/entities/MedicalCondition';
@@ -12,6 +13,8 @@ import { RoutineExercise } from '../../domain/entities/demo/RoutineExercise';
 import { RoutineFood } from '../../domain/entities/demo/RoutineFood';
 
 let ds: DataSource | null = null;
+
+const sync = process.env.TYPEORM_SYNCHRONIZE === 'true';
 
 export async function getDataSource() {
   if (ds && ds.isInitialized) return ds;
@@ -35,7 +38,7 @@ export async function getDataSource() {
       RoutineExercise, 
       RoutineFood,
     ],
-    synchronize: false, // en dev: true si no tienes migraciones aún
+    synchronize: sync, // en dev: true si no tienes migraciones aún
     logging: false
   });
   if (!ds.isInitialized) await ds.initialize();

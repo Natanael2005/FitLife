@@ -1,32 +1,32 @@
-import { Entity, PrimaryGeneratedColumn, Column, Index } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
 
-@Entity({ name: 'demo_exercises' })
+export type Nivel = 'BAJO' | 'INTERMEDIO' | 'AVANZADO';
+
+@Entity('demo_exercises')
 export class Exercise {
   @PrimaryGeneratedColumn('uuid')
   id!: string;
 
-  @Index({ unique: true })
-  @Column('varchar', { length: 60 })
-  slug!: string;
+  @Column({ type: 'varchar', length: 100, unique: true })
+  slug!: string; // clave interna para idempotencia del seed (no se expone)
 
-  @Column('varchar', { length: 200 })
+  @Column({ type: 'varchar', length: 120 })
   nombre!: string;
 
-  @Column('varchar', { length: 100, nullable: true })
-  categoria?: string | null;
+  @Column({ type: 'varchar', length: 100, nullable: true })
+  categoria!: string | null;
 
-  @Column('text', { array: true, default: '{}' })
-  contraindicaciones!: string[]; // slugs: 'lesion_rodilla', ...
+  // tokens UPPER que cruzan con medical_conditions.slug
+  @Column({ type: 'text', array: true, default: () => 'ARRAY[]::text[]' })
+  contraindicaciones!: string[];
 
-  @Column('varchar', { length: 10 })
-  impacto!: 'BAJO' | 'MEDIO' | 'ALTO';
+  @Column({ type: 'varchar', length: 15 })
+  nivel!: Nivel; // BAJO | INTERMEDIO | AVANZADO
 
-  @Column({ name: 'nivel', type: 'varchar', length: 20 })
-  nivel!: 'PRINCIPIANTE' | 'INTERMEDIO' | 'AVANZADO';
+  // impacto eliminado
+  @Column({ type: 'int', nullable: true })
+  series_recomendadas!: number | null;
 
-  @Column('int', { nullable: true })
-  series_recomendadas?: number | null;
-
-  @Column('int', { nullable: true })
-  repeticiones_recomendadas?: number | null;
+  @Column({ type: 'int', nullable: true })
+  repeticiones_recomendadas!: number | null;
 }

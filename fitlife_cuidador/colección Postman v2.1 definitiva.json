@@ -1,0 +1,297 @@
+{
+  "info": {
+    "_postman_id": "fitlife-coleccion-definitiva-20251003",
+    "name": "FitLife — Firebase + Auth + Health + Catálogo DEMO + Cuidador",
+    "description": "Colección integral para probar autenticación Firebase, endpoints del backend (Auth/Health), catálogo DEMO y filtros del Cuidador.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:3000" },
+    { "key": "FIREBASE_WEB_API_KEY", "value": "PON_TU_API_KEY_AQUI" },
+
+    { "key": "firebaseEmail", "value": "fit_user_{{$timestamp}}@example.com" },
+    { "key": "firebasePassword", "value": "Fitlife123!" },
+    { "key": "firebaseIdToken", "value": "" },
+    { "key": "firebaseUid", "value": "" },
+
+    { "key": "userId", "value": "" },
+
+    { "key": "allergyId1", "value": "" },
+    { "key": "allergyId2", "value": "" },
+    { "key": "conditionId1", "value": "" },
+
+    { "key": "demo_ejercicios_json", "value": "[]" },
+    { "key": "demo_alimentos_json", "value": "[]" },
+    { "key": "demo_rutinas_json", "value": "[]" }
+  ],
+  "item": [
+    {
+      "name": "0) Firebase",
+      "item": [
+        {
+          "name": "0.1 Sign Up (crear usuario Firebase)",
+          "event": [
+            { "listen": "test", "script": { "exec": [
+              "pm.test('SignUp 200', () => pm.response.code === 200);",
+              "const r = pm.response.json();",
+              "pm.collectionVariables.set('firebaseIdToken', r.idToken || '');",
+              "pm.collectionVariables.set('firebaseUid', r.localId || '');",
+              "pm.collectionVariables.set('firebaseEmail', r.email || pm.collectionVariables.get('firebaseEmail'));",
+              "pm.test('Tiene idToken y uid', () => !!r.idToken && !!r.localId);"
+            ], "type": "text/javascript" } }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": {
+              "raw": "https://identitytoolkit.googleapis.com/v1/accounts:signUp?key={{FIREBASE_WEB_API_KEY}}",
+              "protocol": "https",
+              "host": ["identitytoolkit","googleapis","com"],
+              "path": ["v1","accounts:signUp"],
+              "query": [{ "key": "key", "value": "{{FIREBASE_WEB_API_KEY}}" }]
+            },
+            "body": { "mode": "raw", "raw": "{\n  \"email\": \"{{firebaseEmail}}\",\n  \"password\": \"{{firebasePassword}}\",\n  \"returnSecureToken\": true\n}" }
+          }
+        },
+        {
+          "name": "0.2 Sign In (inicio de sesión Firebase)",
+          "event": [
+            { "listen": "test", "script": { "exec": [
+              "pm.test('SignIn 200', () => pm.response.code === 200);",
+              "const r = pm.response.json();",
+              "pm.collectionVariables.set('firebaseIdToken', r.idToken || '');",
+              "pm.collectionVariables.set('firebaseUid', r.localId || '');",
+              "pm.collectionVariables.set('firebaseEmail', r.email || pm.collectionVariables.get('firebaseEmail'));",
+              "pm.test('Tiene idToken y uid', () => !!r.idToken && !!r.localId);"
+            ], "type": "text/javascript" } }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": {
+              "raw": "https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key={{FIREBASE_WEB_API_KEY}}",
+              "protocol": "https",
+              "host": ["identitytoolkit","googleapis","com"],
+              "path": ["v1","accounts:signInWithPassword"],
+              "query": [{ "key": "key", "value": "{{FIREBASE_WEB_API_KEY}}" }]
+            },
+            "body": { "mode": "raw", "raw": "{\n  \"email\": \"{{firebaseEmail}}\",\n  \"password\": \"{{firebasePassword}}\",\n  \"returnSecureToken\": true\n}" }
+          }
+        }
+      ]
+    },
+    {
+      "name": "1) Backend Auth",
+      "item": [
+        {
+          "name": "1.1 Register Basic (PUT /api/auth/register-basic)",
+          "event": [
+            { "listen": "test", "script": { "exec": [
+              "pm.test('Register 200/201', () => [200,201].includes(pm.response.code));",
+              "const r = pm.response.json();",
+              "const id = r.id || r.user_id || r.userId;",
+              "pm.collectionVariables.set('userId', id || '');",
+              "pm.test('userId seteado', () => !!pm.collectionVariables.get('userId'));",
+              "console.log('[register-basic] userId=', pm.collectionVariables.get('userId'));"
+            ], "type": "text/javascript" } }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{firebaseIdToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": { "raw": "{{baseUrl}}/api/auth/register-basic", "host": ["{{baseUrl}}"], "path": ["api","auth","register-basic"] },
+            "body": { "mode": "raw", "raw": "{\n  \"firstName\": \"Felipe\",\n  \"lastName\": \"Usuario\",\n  \"gender\": \"masculino\"\n}" }
+          }
+        },
+        {
+          "name": "1.2 Profile (GET /api/auth/profile)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{firebaseIdToken}}" }],
+            "url": { "raw": "{{baseUrl}}/api/auth/profile", "host": ["{{baseUrl}}"], "path": ["api","auth","profile"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "2) Health",
+      "item": [
+        {
+          "name": "2.1 Options (GET /api/health/options)",
+          "event": [
+            { "listen": "test", "script": { "exec": [
+              "pm.test('Options 200', () => pm.response.code === 200);",
+              "const r = pm.response.json();",
+              "const a = (r.allergies||[]).map(x=>x.id);",
+              "const c = (r.conditions||[]).map(x=>x.id);",
+              "if(a.length) pm.collectionVariables.set('allergyId1', a[0]);",
+              "if(a.length>1) pm.collectionVariables.set('allergyId2', a[1]);",
+              "if(c.length) pm.collectionVariables.set('conditionId1', c[0]);",
+              "console.log('[options] set A1/A2/C1');"
+            ], "type": "text/javascript" } }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{firebaseIdToken}}" }],
+            "url": { "raw": "{{baseUrl}}/api/health/options", "host": ["{{baseUrl}}"], "path": ["api","health","options"] }
+          }
+        },
+        {
+          "name": "2.2 Save Health (PUT /api/health/user/:id)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{firebaseIdToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": { "raw": "{{baseUrl}}/api/health/user/{{userId}}", "host": ["{{baseUrl}}"], "path": ["api","health","user","{{userId}}"] },
+            "body": { "mode": "raw", "raw": "{\n  \"pesoKg\": 72,\n  \"estaturaCm\": 175,\n  \"nivel\": \"INTERMEDIO\",\n  \"alergias\": [\"{{allergyId1}}\", \"{{allergyId2}}\"],\n  \"condiciones\": [\"{{conditionId1}}\"]\n}" }
+          }
+        }
+      ]
+    },
+    {
+      "name": "3) Catálogo DEMO (con Bearer)",
+      "item": [
+        {
+          "name": "3.1 Ejercicios (GET) + guardar muestras",
+          "event": [
+            { "listen": "test", "script": { "exec": [
+              "pm.test('Demo ejercicios 200', () => pm.response.code === 200);",
+              "const arr = pm.response.json() || [];",
+              "pm.collectionVariables.set('demo_ejercicios_json', JSON.stringify(arr.slice(0, 3)));",
+              "pm.test('Guardé 3 ejercicios demo', () => true);"
+            ], "type": "text/javascript" } }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{firebaseIdToken}}" }],
+            "url": { "raw": "{{baseUrl}}/api/catalogo-demo/ejercicios", "host": ["{{baseUrl}}"], "path": ["api","catalogo-demo","ejercicios"] }
+          }
+        },
+        {
+          "name": "3.2 Alimentos (GET) + guardar muestras",
+          "event": [
+            { "listen": "test", "script": { "exec": [
+              "pm.test('Demo alimentos 200', () => pm.response.code === 200);",
+              "const arr = pm.response.json() || [];",
+              "pm.collectionVariables.set('demo_alimentos_json', JSON.stringify(arr.slice(0, 3)));",
+              "pm.test('Guardé 3 alimentos demo', () => true);"
+            ], "type": "text/javascript" } }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{firebaseIdToken}}" }],
+            "url": { "raw": "{{baseUrl}}/api/catalogo-demo/alimentos", "host": ["{{baseUrl}}"], "path": ["api","catalogo-demo","alimentos"] }
+          }
+        },
+        {
+          "name": "3.3 Rutinas públicas (GET) + guardar muestras",
+          "event": [
+            { "listen": "test", "script": { "exec": [
+              "pm.test('Demo rutinas 200', () => pm.response.code === 200);",
+              "const arr = pm.response.json() || [];",
+              "pm.collectionVariables.set('demo_rutinas_json', JSON.stringify(arr.slice(0, 2)));",
+              "pm.test('Guardé 2 rutinas demo', () => true);"
+            ], "type": "text/javascript" } }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{firebaseIdToken}}" }],
+            "url": { "raw": "{{baseUrl}}/api/catalogo-demo/rutinas", "host": ["{{baseUrl}}"], "path": ["api","catalogo-demo","rutinas"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "4) Cuidador (sin Bearer para GET)",
+      "item": [
+        {
+          "name": "4.1 Ejercicios aptos (GET)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/api/cuidador/ejercicios-aptos?userId={{userId}}", "host": ["{{baseUrl}}"], "path": ["api","cuidador","ejercicios-aptos"], "query": [{ "key": "userId", "value": "{{userId}}" }] }
+          }
+        },
+        {
+          "name": "4.2 Alimentos aptos (GET)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/api/cuidador/alimentos-aptos?userId={{userId}}", "host": ["{{baseUrl}}"], "path": ["api","cuidador","alimentos-aptos"], "query": [{ "key": "userId", "value": "{{userId}}" }] }
+          }
+        },
+        {
+          "name": "4.3 Opciones aptas (GET ejercicios+alimentos juntos)",
+          "event": [
+            { "listen": "test", "script": { "exec": [
+              "pm.test('Aptos 200', () => pm.response.code === 200);",
+              "const r = pm.response.json();",
+              "pm.test('No expone slug en ejercicios', () => !(r.ejercicios||[]).some(x=>'slug'in x));",
+              "pm.test('No expone slug en alimentos', () => !(r.alimentos||[]).some(x=>'slug'in x));"
+            ], "type": "text/javascript" } }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/api/cuidador/aptos?userId={{userId}}", "host": ["{{baseUrl}}"], "path": ["api","cuidador","aptos"], "query": [{ "key": "userId", "value": "{{userId}}" }] }
+          }
+        },
+        {
+          "name": "4.4 Rutinas aptas (GET)",
+          "event": [
+            { "listen": "test", "script": { "exec": [
+              "pm.test('Rutinas aptas 200', () => pm.response.code === 200);",
+              "const arr = pm.response.json();",
+              "pm.test('No expone slug en items', () => (arr||[]).every(r=> (r.ejercicios||[]).every(x=>!('slug'in x)) && (r.alimentos||[]).every(x=>!('slug'in x)) ));"
+            ], "type": "text/javascript" } }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/api/cuidador/rutinas-aptas?userId={{userId}}", "host": ["{{baseUrl}}"], "path": ["api","cuidador","rutinas-aptas"], "query": [{ "key": "userId", "value": "{{userId}}" }] }
+          }
+        },
+        {
+          "name": "4.5 Filtrar ejercicios (POST, usa objetos del catálogo DEMO)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/api/cuidador/filtrar-ejercicios", "host": ["{{baseUrl}}"], "path": ["api","cuidador","filtrar-ejercicios"] },
+            "body": { "mode": "raw", "raw": "{\n  \"userId\": \"{{userId}}\",\n  \"ejercicios\": {{demo_ejercicios_json}}\n}" }
+          }
+        },
+        {
+          "name": "4.6 Filtrar alimentos (POST, usa objetos del catálogo DEMO)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/api/cuidador/filtrar-alimentos", "host": ["{{baseUrl}}"], "path": ["api","cuidador","filtrar-alimentos"] },
+            "body": { "mode": "raw", "raw": "{\n  \"userId\": \"{{userId}}\",\n  \"alimentos\": {{demo_alimentos_json}}\n}" }
+          }
+        },
+        {
+          "name": "4.7 Filtrar todo (POST, usa 3+3 del DEMO)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/api/cuidador/filtrar-todo", "host": ["{{baseUrl}}"], "path": ["api","cuidador","filtrar-todo"] },
+            "body": { "mode": "raw", "raw": "{\n  \"userId\": \"{{userId}}\",\n  \"ejercicios\": {{demo_ejercicios_json}},\n  \"alimentos\": {{demo_alimentos_json}}\n}" }
+          }
+        },
+        {
+          "name": "4.8 Filtrar rutinas (POST, usa 2 del DEMO)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/api/cuidador/filtrar-rutinas", "host": ["{{baseUrl}}"], "path": ["api","cuidador","filtrar-rutinas"] },
+            "body": { "mode": "raw", "raw": "{\n  \"userId\": \"{{userId}}\",\n  \"rutinas\": {{demo_rutinas_json}}\n}" }
+          }
+        }
+      ]
+    }
+  ]
+}
