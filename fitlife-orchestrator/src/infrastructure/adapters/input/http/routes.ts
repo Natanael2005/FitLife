@@ -6,8 +6,9 @@ export function createOrchestratorRouter(service: IOrchestratorService): Router 
   const router = Router();
   const controller = new OrchestratorController(service);
 
-  // Casos de Uso Principales
-  router.post('/creacion/opciones', controller.getCreationOptions);
+  // --- CAMBIO AQUÍ: de .post() a .get() ---
+  router.get('/creacion/opciones', controller.getCreationOptions);
+  
   router.post('/rutinas', controller.createRoutine);
   router.post('/rutinas/desde-default/:defaultId', controller.cloneRoutine);
 

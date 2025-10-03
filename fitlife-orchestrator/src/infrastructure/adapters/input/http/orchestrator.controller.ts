@@ -57,12 +57,13 @@ const createRoutineSchema = z.object({
   alimentos: z.array(alimentoSchema),
 });
 
-const creationOptionsSchema = z.object({
-  usuario_id: z.string().min(1, "usuario_id is required"),
+// CAMBIO: El esquema ahora valida un parámetro de la URL (query)
+const getCreationOptionsSchema = z.object({
+  usuarioId: z.string().min(1, "Query param 'usuarioId' is required"),
 });
 
 
-// --- CONTROLADOR (SIN CAMBIOS EN LA LÓGICA) ---
+// --- CONTROLADOR ---
 const asyncHandler = (fn: (req: Request, res: Response, next: NextFunction) => Promise<void>) => 
   (req: Request, res: Response, next: NextFunction) => {
     Promise.resolve(fn(req, res, next)).catch(next);
@@ -72,8 +73,9 @@ export class OrchestratorController {
   constructor(private readonly service: IOrchestratorService) {}
 
   getCreationOptions = asyncHandler(async (req, res, next) => {
-    const parsedBody = creationOptionsSchema.parse(req.body);
-    const options = await this.service.getCreationOptions(parsedBody.usuario_id);
+    // CAMBIO: Se valida y extrae el dato de req.query en lugar de req.body
+    const { usuarioId } = getCreationOptionsSchema.parse(req.query);
+    const options = await this.service.getCreationOptions(usuarioId);
     res.status(200).json(options);
   });
 
