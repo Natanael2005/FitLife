@@ -84,7 +84,7 @@
       "name": "1) Backend Auth",
       "item": [
         {
-          "name": "1.1 Register Basic (PUT /api/auth/register-basic)",
+          "name": "1.1 Register Basic (POST /api/auth/register-basic)",
           "event": [
             { "listen": "test", "script": { "exec": [
               "pm.test('Register 200/201', () => [200,201].includes(pm.response.code));",
@@ -96,7 +96,7 @@
             ], "type": "text/javascript" } }
           ],
           "request": {
-            "method": "PUT",
+            "method": "POST",
             "header": [
               { "key": "Authorization", "value": "Bearer {{firebaseIdToken}}" },
               { "key": "Content-Type", "value": "application/json" }
