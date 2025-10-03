@@ -1,0 +1,147 @@
+{
+  "info": {
+    "name": "FitLife — Auth (Local)",
+    "_postman_id": "a1111111-b222-4333-8444-555555555555",
+    "description": "Pruebas de Auth con Firebase (sin frontend) y endpoints del backend.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "0) Ping",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": { "raw": "{{baseUrl}}/ping", "host": ["{{baseUrl}}"], "path": ["ping"] }
+      }
+    },
+    {
+      "name": "1) (Opcional) Firebase — Sign Up (crear usuario)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "let j={}; try{ j=pm.response.json(); }catch(e){}",
+              "if(j.idToken){",
+              "  pm.environment.set('idToken', j.idToken);",
+              "  if(j.localId){ pm.environment.set('firebaseUid', j.localId); }",
+              "}",
+              "pm.test('Tiene idToken', function(){ pm.expect(j.idToken).to.be.a('string'); });"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"{{email}}\",\n  \"password\": \"{{password}}\",\n  \"returnSecureToken\": true\n}"
+        },
+        "url": {
+          "raw": "https://identitytoolkit.googleapis.com/v1/accounts:signUp?key={{apiKey}}",
+          "protocol": "https",
+          "host": ["identitytoolkit", "googleapis", "com"],
+          "path": ["v1", "accounts:signUp"],
+          "query": [{ "key": "key", "value": "{{apiKey}}" }]
+        }
+      }
+    },
+    {
+      "name": "2) Firebase — Sign In (obtener idToken)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "let j={}; try{ j=pm.response.json(); }catch(e){}",
+              "if(j.idToken){",
+              "  pm.environment.set('idToken', j.idToken);",
+              "  if(j.localId){ pm.environment.set('firebaseUid', j.localId); }",
+              "}",
+              "pm.test('Tiene idToken', function(){ pm.expect(j.idToken).to.be.a('string'); });"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"{{email}}\",\n  \"password\": \"{{password}}\",\n  \"returnSecureToken\": true\n}"
+        },
+        "url": {
+          "raw": "https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key={{apiKey}}",
+          "protocol": "https",
+          "host": ["identitytoolkit", "googleapis", "com"],
+          "path": ["v1", "accounts:signInWithPassword"],
+          "query": [{ "key": "key", "value": "{{apiKey}}" }]
+        }
+      }
+    },
+    {
+      "name": "3) Auth — Register Basic (upsert)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "let j={}; try{ j=pm.response.json(); }catch(e){}",
+              "if(j.id){ pm.environment.set('userId', j.id); }",
+              "pm.test('Tiene userId', function(){ pm.expect(j.id).to.be.a('string'); });",
+              "pm.test('profile_completed es boolean', function(){ pm.expect(typeof j.profile_completed).to.eql('boolean'); });"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{idToken}}" },
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"firstName\": \"Diego\",\n  \"lastName\": \"Pedraza\",\n  \"gender\": \"masculino\"\n}"
+        },
+        "url": { "raw": "{{baseUrl}}/api/auth/register-basic", "host": ["{{baseUrl}}"], "path": ["api", "auth", "register-basic"] }
+      }
+    },
+    {
+      "name": "4) Auth — Profile",
+      "request": {
+        "method": "GET",
+        "header": [{ "key": "Authorization", "value": "Bearer {{idToken}}" }],
+        "url": { "raw": "{{baseUrl}}/api/auth/profile", "host": ["{{baseUrl}}"], "path": ["api", "auth", "profile"] }
+      }
+    },
+
+    {
+      "name": "— Opcional — Health — Get Options",
+      "request": {
+        "method": "GET",
+        "header": [{ "key": "Authorization", "value": "Bearer {{idToken}}" }],
+        "url": { "raw": "{{baseUrl}}/api/health/options", "host": ["{{baseUrl}}"], "path": ["api", "health", "options"] }
+      }
+    },
+    {
+      "name": "— Opcional — Health — Save & Complete Onboarding",
+      "request": {
+        "method": "PUT",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{idToken}}" },
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"pesoKg\": 92.5,\n  \"estaturaCm\": 170,\n  \"nivel\": \"PRINCIPIANTE\",\n  \"alergias\": [\"gluten\", \"lacteos\"],\n  \"condiciones\": [\"lesion_rodilla\"]\n}"
+        },
+        "url": { "raw": "{{baseUrl}}/api/health/user/{{userId}}", "host": ["{{baseUrl}}"], "path": ["api", "health", "user", "{{userId}}"] }
+      }
+    }
+  ]
+}
