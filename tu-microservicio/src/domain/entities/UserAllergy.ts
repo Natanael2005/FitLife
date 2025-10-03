@@ -5,8 +5,8 @@ export class UserAllergy {
   @PrimaryColumn('uuid')
   user_id!: string;
 
-  @PrimaryColumn('varchar', { length: 50 })
-  allergy_id!: string;
+  @PrimaryColumn('uuid')
+  allergy_id!: string; // ahora UUID
 
   @Column('timestamptz', { default: () => 'CURRENT_TIMESTAMP' })
   created_at!: Date;

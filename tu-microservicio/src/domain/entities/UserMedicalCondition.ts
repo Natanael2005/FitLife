@@ -5,8 +5,8 @@ export class UserMedicalCondition {
   @PrimaryColumn('uuid')
   user_id!: string;
 
-  @PrimaryColumn('varchar', { length: 50 })
-  condition_id!: string;
+  @PrimaryColumn('uuid')
+  condition_id!: string; // ahora UUID
 
   @Column('timestamptz', { default: () => 'CURRENT_TIMESTAMP' })
   created_at!: Date;

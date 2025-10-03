@@ -1,9 +1,13 @@
-import { Entity, PrimaryColumn, Column } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, Unique } from 'typeorm';
 
 @Entity({ name: 'medical_conditions' })
+@Unique(['slug'])
 export class MedicalCondition {
-  @PrimaryColumn('varchar', { length: 50 })
-  id!: string; // p. ej. "lesion_rodilla", "asma"
+  @PrimaryGeneratedColumn('uuid', { name: 'condition_id' })
+  id!: string;         // UUID PK
+
+  @Column('varchar', { length: 50 })
+  slug!: string;       // 'lesion_rodilla', único
 
   @Column('varchar', { length: 120 })
   name!: string;
