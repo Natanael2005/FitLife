@@ -1,0 +1,1 @@
+# src/shared/utils\n\n📂 Utilidades comunes. Funciones auxiliares como Logger, formateadores, validadores o generadores de UUIDs.\n\n## 📘 Notas adicionales\n- Esta carpeta es parte de la arquitectura hexagonal.\n- Se debe eliminar este archivo al implementar el código real.\n- Mantener separación estricta de responsabilidades.
