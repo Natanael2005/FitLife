@@ -6,19 +6,17 @@ import { env } from '../../../config/env.js';
 export class CaretakerClientImpl implements ICaretakerClient {
   async fetchAptos(usuarioId: string): Promise<AptosResponse> {
     try {
-      const url = `${env.CARETAKER_URL}/aptos`;
+      // CAMBIO: Construimos la URL con el query param, como sugeriste.
+      const url = `${env.CARETAKER_URL}/api/cuidador/ejercicios-aptos?userId=${usuarioId}`;
+      
+      // CAMBIO: La petición ahora es un GET simple.
       const response = await fetchWithRetry(
         url,
-        {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ usuario_id: usuarioId }),
-        },
-        'caretaker' // Nombre para los logs de error
+        { method: 'GET' },
+        'caretaker'
       );
       return response.json();
     } catch (error) {
-      // Si fetchWithRetry falla, lo envolvemos en nuestro error de dominio específico
       throw new CaretakerServiceError();
     }
   }
