@@ -1,8 +1,8 @@
 export class UserRoutine {
   constructor(
     public readonly id: number,
-    public readonly userId: string,
-    public readonly routineId: string,
+    public readonly usuario_id: string,
+    public readonly rutina_id: string,
     public readonly assignedAt: Date,
     public readonly isActive: boolean,
     public readonly createdAt: Date
@@ -11,8 +11,8 @@ export class UserRoutine {
   deactivate(): UserRoutine {
     return new UserRoutine(
       this.id,
-      this.userId,
-      this.routineId,
+      this.usuario_id,
+      this.rutina_id,
       this.assignedAt,
       false,
       this.createdAt
@@ -22,8 +22,8 @@ export class UserRoutine {
   activate(): UserRoutine {
     return new UserRoutine(
       this.id,
-      this.userId,
-      this.routineId,
+      this.usuario_id,
+      this.rutina_id,
       this.assignedAt,
       true,
       this.createdAt

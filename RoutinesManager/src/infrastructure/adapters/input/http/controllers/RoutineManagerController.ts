@@ -8,14 +8,14 @@ export class RoutineManagerController {
 
   async assignRoutine(req: Request, res: Response): Promise<void> {
     try {
-      const { userId, routineId } = req.body;
+      const { usuario_id, rutina_id } = req.body;
 
-      if (!userId || !routineId) {
-        res.status(400).json({ error: 'userId and routineId are required' });
+      if (!usuario_id || !rutina_id) {
+        res.status(400).json({ error: 'usuario_id and rutina_id are required' });
         return;
       }
 
-      const userRoutine = await this.routineManagerService.assignRoutine(userId, routineId);
+      const userRoutine = await this.routineManagerService.assignRoutine(usuario_id, rutina_id);
       res.status(201).json(userRoutine);
     } catch (error: any) {
       res.status(400).json({ error: error.message });
@@ -24,8 +24,8 @@ export class RoutineManagerController {
 
   async getUserRoutines(req: Request, res: Response): Promise<void> {
     try {
-      const { userId } = req.params;
-      const userRoutines = await this.routineManagerService.getUserRoutines(userId);
+      const { usuario_id } = req.params;
+      const userRoutines = await this.routineManagerService.getUserRoutines(usuario_id);
       res.json(userRoutines);
     } catch (error: any) {
       res.status(404).json({ error: error.message });
@@ -34,8 +34,8 @@ export class RoutineManagerController {
 
   async getUserRoutinesWithDetails(req: Request, res: Response): Promise<void> {
     try {
-      const { userId } = req.params;
-      const routinesWithDetails = await this.routineManagerService.getUserRoutinesWithDetails(userId);
+      const { usuario_id } = req.params;
+      const routinesWithDetails = await this.routineManagerService.getUserRoutinesWithDetails(usuario_id);
       res.json(routinesWithDetails);
     } catch (error: any) {
       res.status(500).json({ error: error.message });
@@ -44,8 +44,8 @@ export class RoutineManagerController {
 
   async removeRoutine(req: Request, res: Response): Promise<void> {
     try {
-      const { userId, routineId } = req.params;
-      await this.routineManagerService.removeRoutine(userId, routineId);
+      const { usuario_id, rutina_id } = req.params;
+      await this.routineManagerService.removeRoutine(usuario_id, rutina_id);
       res.status(204).send();
     } catch (error: any) {
       res.status(404).json({ error: error.message });
