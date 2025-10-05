@@ -7,9 +7,9 @@ export class PostgresUserRoutineRepository implements UserRoutineRepository {
 
   async findByUserId(userId: string): Promise<UserRoutine[]> {
     const query = `
-      SELECT id, user_id, routine_id, assigned_at, is_active, created_at
+      SELECT id, user_id, routine_id, assigned_at, activo, created_at
       FROM user_routines 
-      WHERE user_id = $1 AND is_active = true
+      WHERE user_id = $1 AND activo = true
       ORDER BY assigned_at DESC
     `;
     
@@ -20,15 +20,15 @@ export class PostgresUserRoutineRepository implements UserRoutineRepository {
       row.user_id,
       row.routine_id,
       row.assigned_at,
-      row.is_active,
+      row.activo,
       row.created_at
     ));
   }
 
   async findByUserAndRoutine(userId: string, routineId: string): Promise<UserRoutine | null> {
     const query = `
-      SELECT id, user_id, routine_id, assigned_at, is_active, created_at
-      FROM user_routines 
+      SELECT id, user_id, routine_id, assigned_at, activo, created_at
+      FROM user_routines
       WHERE user_id = $1 AND routine_id = $2
     `;
     
@@ -44,16 +44,16 @@ export class PostgresUserRoutineRepository implements UserRoutineRepository {
       row.user_id,
       row.routine_id,
       row.assigned_at,
-      row.is_active,
+      row.activo,
       row.created_at
     );
   }
 
   async save(userId: string, routineId: string): Promise<UserRoutine> {
     const query = `
-      INSERT INTO user_routines (user_id, routine_id, assigned_at, is_active)
+      INSERT INTO user_routines (user_id, routine_id, assigned_at, activo)
       VALUES ($1, $2, NOW(), true)
-      RETURNING id, user_id, routine_id, assigned_at, is_active, created_at
+      RETURNING id, user_id, routine_id, assigned_at, activo, created_at
     `;
 
     const result = await this.pool.query(query, [userId, routineId]);
@@ -64,7 +64,7 @@ export class PostgresUserRoutineRepository implements UserRoutineRepository {
       row.user_id,
       row.routine_id,
       row.assigned_at,
-      row.is_active,
+      row.activo,
       row.created_at
     );
   }
@@ -72,7 +72,7 @@ export class PostgresUserRoutineRepository implements UserRoutineRepository {
   async delete(userId: string, routineId: string): Promise<void> {
     const query = `
       UPDATE user_routines 
-      SET is_active = false 
+      SET activo = false 
       WHERE user_id = $1 AND routine_id = $2
     `;
     
@@ -82,9 +82,9 @@ export class PostgresUserRoutineRepository implements UserRoutineRepository {
   async updateStatus(id: number, isActive: boolean): Promise<UserRoutine> {
     const query = `
       UPDATE user_routines 
-      SET is_active = $2, assigned_at = NOW()
+      SET activo = $2, assigned_at = NOW()
       WHERE id = $1
-      RETURNING id, user_id, routine_id, assigned_at, is_active, created_at
+      RETURNING id, user_id, routine_id, assigned_at, activo, created_at
     `;
     
     const result = await this.pool.query(query, [id, isActive]);
@@ -95,7 +95,7 @@ export class PostgresUserRoutineRepository implements UserRoutineRepository {
       row.user_id,
       row.routine_id,
       row.assigned_at,
-      row.is_active,
+      row.activo,
       row.created_at
     );
   }

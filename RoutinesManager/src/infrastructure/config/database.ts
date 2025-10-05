@@ -19,12 +19,12 @@ export const createUserRoutinesTable = `
     user_id VARCHAR(255) NOT NULL,
     routine_id VARCHAR(255) NOT NULL,
     assigned_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    is_active BOOLEAN DEFAULT true,
+    activo BOOLEAN DEFAULT true,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     UNIQUE(user_id, routine_id)
   );
 
   CREATE INDEX IF NOT EXISTS idx_user_routines_user_id ON user_routines(user_id);
   CREATE INDEX IF NOT EXISTS idx_user_routines_routine_id ON user_routines(routine_id);
-  CREATE INDEX IF NOT EXISTS idx_user_routines_active ON user_routines(is_active);
+  CREATE INDEX IF NOT EXISTS idx_user_routines_activo ON user_routines(activo);
 `;
