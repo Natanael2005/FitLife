@@ -14,17 +14,17 @@ export const createPool = (): Pool => {
 };
 
 export const createUserRoutinesTable = `
-  CREATE TABLE IF NOT EXISTS user_routines (
+  CREATE TABLE IF NOT EXISTS routine_assignments (
     id SERIAL PRIMARY KEY,
-    user_id VARCHAR(255) NOT NULL,
-    routine_id VARCHAR(255) NOT NULL,
+    usuario_id VARCHAR(255) NOT NULL,
+    rutina_id VARCHAR(255) NOT NULL,
     assigned_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    activo BOOLEAN DEFAULT true,
+    is_active BOOLEAN DEFAULT true,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    UNIQUE(user_id, routine_id)
+    UNIQUE(usuario_id, rutina_id)
   );
 
-  CREATE INDEX IF NOT EXISTS idx_user_routines_user_id ON user_routines(user_id);
-  CREATE INDEX IF NOT EXISTS idx_user_routines_routine_id ON user_routines(routine_id);
-  CREATE INDEX IF NOT EXISTS idx_user_routines_activo ON user_routines(activo);
+  CREATE INDEX IF NOT EXISTS idx_routine_assignments_usuario_id ON routine_assignments(usuario_id);
+  CREATE INDEX IF NOT EXISTS idx_routine_assignments_rutina_id ON routine_assignments(rutina_id);
+  CREATE INDEX IF NOT EXISTS idx_routine_assignments_active ON routine_assignments(is_active);
 `;

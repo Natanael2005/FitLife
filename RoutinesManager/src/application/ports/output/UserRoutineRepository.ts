@@ -1,9 +1,9 @@
 import { UserRoutine } from '../../../domain/entities/UserRoutine';
 
 export interface UserRoutineRepository {
-  findByUserId(userId: string): Promise<UserRoutine[]>;
-  findByUserAndRoutine(userId: string, routineId: string): Promise<UserRoutine | null>;
-  save(userId: string, routineId: string): Promise<UserRoutine>;
-  delete(userId: string, routineId: string): Promise<void>;
+  findByUserId(usuario_id: string): Promise<UserRoutine[]>;
+  findByUserAndRoutine(usuario_id: string, rutina_id: string): Promise<UserRoutine | null>;
+  save(usuario_id: string, rutina_id: string): Promise<UserRoutine>;
+  delete(usuario_id: string, rutina_id: string): Promise<void>;
   updateStatus(id: number, isActive: boolean): Promise<UserRoutine>;
 }

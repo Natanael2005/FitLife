@@ -59,15 +59,15 @@ async removeRoutine(userId: string, routineId: string): Promise<void> {
       return [];
     }
 
-    const routineIds = userRoutines.map(ur => ur.routineId);
+    const routineIds = userRoutines.map(ur => ur.rutina_id);
     const routineDetails = await this.routineServiceClient.getMultipleRoutines(routineIds);
 
     return userRoutines.map(ur => {
-      const details = routineDetails.find(rd => rd.id === ur.routineId);
+      const details = routineDetails.find(rd => rd.id === ur.rutina_id);
       return {
         userRoutineId: ur.id,
-        userId: ur.userId,
-        routineId: ur.routineId,
+        userId: ur.usuario_id,
+        routineId: ur.rutina_id,
         assignedAt: ur.assignedAt,
         isActive: ur.isActive,
         routineDetails: details || null

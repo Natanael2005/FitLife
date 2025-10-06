@@ -57,7 +57,7 @@ export class HttpRoutineServiceClient implements RoutineServiceClient {
   private mapDifficulty(ejercicios: any[]): string {
     if (!ejercicios || ejercicios.length === 0) return 'beginner';
     
-    const niveles = ejercicios.map(e => e.nivel || 'BASICO');
+    const niveles = ejercicios.map(e => e.nivel_minimo || 'BASICO');
     
     if (niveles.some(n => n === 'AVANZADO')) return 'advanced';
     if (niveles.some(n => n === 'INTERMEDIO')) return 'intermediate';
