@@ -11,7 +11,7 @@ import { normalizeToken } from '../../domain/value-objects/health';
 type DenyReason = 'CONTRAINDICACION' | 'NIVEL_REQUERIDO' | 'ALERGENO';
 
 const NivelRank: Record<Nivel, number> = {
-  PRINCIPIANTE: 1,
+  BAJO: 1,
   INTERMEDIO: 2,
   AVANZADO: 3,
 };

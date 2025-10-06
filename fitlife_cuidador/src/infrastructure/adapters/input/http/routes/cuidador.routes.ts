@@ -5,7 +5,7 @@ import { getDataSource } from '../../../../config/datasource';
 // Servicio + adapters
 import { CuidadorService } from '../../../../../application/services/CuidadorService';
 import { UserHealthQueryAdapter } from '../../../output/persistence/UserHealthQueryAdapter';
-import { DemoCatalogQueryAdapter } from '../../../output/persistence/DemoCatalogQueryAdapter';
+import { ExternalCatalogQueryAdapter } from '../../../output/persistence/ExternalCatalogQueryAdapter';
 
 import {
   CatalogExercise,
@@ -23,8 +23,8 @@ const toNivelArray = (nivel: 'PRINCIPIANTE'|'INTERMEDIO'|'AVANZADO') => [nivel];
 async function buildService() {
   const ds = await getDataSource();
   const health = new UserHealthQueryAdapter(ds);
-  const catalog = new DemoCatalogQueryAdapter(ds);
-  return new CuidadorService(health, catalog);
+  const catalogAdapter = new ExternalCatalogQueryAdapter(ds);
+  return new CuidadorService(health, catalogAdapter);
 }
 
 // ===== Validaciones =====
@@ -118,7 +118,7 @@ r.get('/aptos', async (req, res) => {
       nombre: e.nombre,
       categoria: e.categoria ?? null,
       contraindicaciones: upArr(e.contraindicaciones),   // UPPER
-      nivel_minimo: toNivelArray(e.nivel as any),        // array
+      nivel: toNivelArray(e.nivel as any),        // array
       series_recomendadas: e.series_recomendadas ?? null,
       repeticiones_recomendadas: e.repeticiones_recomendadas ?? null,
       gifUrl: "",
@@ -164,7 +164,7 @@ r.get('/rutinas-aptas', async (req, res) => {
       nombre: e.nombre,
       categoria: e.categoria ?? null,
       contraindicaciones: upArr(e.contraindicaciones),
-      nivel_minimo: toNivelArray(e.nivel as any),
+      nivel: toNivelArray(e.nivel as any),
       series_recomendadas: e.series_recomendadas ?? null,
       repeticiones_recomendadas: e.repeticiones_recomendadas ?? null,
       gifUrl: "",

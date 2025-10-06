@@ -1,4 +1,4 @@
-export type Nivel = 'PRINCIPIANTE' | 'INTERMEDIO' | 'AVANZADO';
+export type Nivel = 'BAJO' | 'INTERMEDIO' | 'AVANZADO';
 
 export type CatalogExercise = {
   id: string;

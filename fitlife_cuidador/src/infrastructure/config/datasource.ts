@@ -6,10 +6,7 @@ import { MedicalCondition } from '../../domain/entities/MedicalCondition';
 import { UserAllergy } from '../../domain/entities/UserAllergy';
 import { UserMedicalCondition } from '../../domain/entities/UserMedicalCondition';
 import { UserHealthData } from '../../domain/entities/UserHealthData';
-import { Exercise } from '../../domain/entities/demo/Exercise';
-import { Food } from '../../domain/entities/demo/Food';
 import { PublicRoutine } from '../../domain/entities/demo/PublicRoutine';
-import { RoutineExercise } from '../../domain/entities/demo/RoutineExercise';
 import { RoutineFood } from '../../domain/entities/demo/RoutineFood';
 
 let ds: DataSource | null = null;
@@ -32,10 +29,7 @@ export async function getDataSource() {
       UserAllergy,
       UserMedicalCondition,
       UserHealthData,
-      Exercise,
-      Food,
       PublicRoutine,
-      RoutineExercise, 
       RoutineFood,
     ],
     synchronize: sync, // en dev: true si no tienes migraciones aún
