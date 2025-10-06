@@ -13,18 +13,18 @@ export const createPool = (): Pool => {
   });
 };
 
-// export const createUserRoutinesTable = `
-//   CREATE TABLE IF NOT EXISTS user_routines (
-//     id SERIAL PRIMARY KEY,
-//     usuario_id VARCHAR(255) NOT NULL,
-//     rutina_id VARCHAR(255) NOT NULL,
-//     assigned_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-//     is_active BOOLEAN DEFAULT true,
-//     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-//     UNIQUE(usuario_id, routina_id)
-//   );
+export const createUserRoutinesTable = `
+  CREATE TABLE IF NOT EXISTS routine_assignments (
+    id SERIAL PRIMARY KEY,
+    usuario_id VARCHAR(255) NOT NULL,
+    rutina_id VARCHAR(255) NOT NULL,
+    assigned_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    is_active BOOLEAN DEFAULT true,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE(usuario_id, rutina_id)
+  );
 
-//   CREATE INDEX IF NOT EXISTS idx_user_routines_usuario_id ON user_routines(usuario_id);
-//   CREATE INDEX IF NOT EXISTS idx_user_routines_rutina_id ON user_routines(rutina_id);
-//   CREATE INDEX IF NOT EXISTS idx_user_routines_active ON user_routines(is_active);
-// `;
+  CREATE INDEX IF NOT EXISTS idx_routine_assignments_usuario_id ON routine_assignments(usuario_id);
+  CREATE INDEX IF NOT EXISTS idx_routine_assignments_rutina_id ON routine_assignments(rutina_id);
+  CREATE INDEX IF NOT EXISTS idx_routine_assignments_active ON routine_assignments(is_active);
+`;

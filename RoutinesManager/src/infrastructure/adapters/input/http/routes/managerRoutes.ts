@@ -5,9 +5,9 @@ export function createManagerRoutes(controller: RoutineManagerController): Route
   const router = Router();
 
   router.post('/assign', controller.assignRoutine.bind(controller));
-  router.get('/user/:userId', controller.getUserRoutines.bind(controller));
-  router.get('/user/:userId/details', controller.getUserRoutinesWithDetails.bind(controller));
-  router.delete('/user/:userId/routine/:routineId', controller.removeRoutine.bind(controller));
+  router.get('/user/:usuario_id', controller.getUserRoutines.bind(controller));
+  router.get('/user/:usuario_id/details', controller.getUserRoutinesWithDetails.bind(controller));
+  router.delete('/user/:usuario_id/routine/:rutina_id', controller.removeRoutine.bind(controller));
 
   return router;
 }
