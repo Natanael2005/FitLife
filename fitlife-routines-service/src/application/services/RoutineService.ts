@@ -18,7 +18,9 @@ const ExerciseSchema = z.object({
   gifUrl: z.string(),
   musculo_principal: z.string(),
   musculo_secundario: z.string(),
-  instrucciones: z.array(z.string()).optional()
+  instrucciones: z.array(z.string()).optional(),
+  isActive: z.boolean().optional()
+
 });
 
 const FoodSchema = z.object({

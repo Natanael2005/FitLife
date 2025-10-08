@@ -36,7 +36,9 @@ const ejercicioSchema = z.object({
     gifUrl: z.string(),
     musculo_principal: z.string(),
     musculo_secundario: z.string(),
-    instrucciones: z.array(z.string())
+    instrucciones: z.array(z.string()),
+    isActive: z.boolean().optional(),
+   
 });
 
 // --- CAMBIO APLICADO: Este es el nuevo esquema de alimentos ---

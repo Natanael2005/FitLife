@@ -10,4 +10,5 @@ export interface ExerciseSnapshot {
   musculo_principal: string;
   musculo_secundario: string;
   instrucciones?: string[];
+  isActive?: boolean;
 }
