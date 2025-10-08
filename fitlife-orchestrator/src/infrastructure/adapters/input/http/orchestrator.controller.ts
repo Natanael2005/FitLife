@@ -39,14 +39,16 @@ const ejercicioSchema = z.object({
     instrucciones: z.array(z.string())
 });
 
+// --- CAMBIO APLICADO: Este es el nuevo esquema de alimentos ---
 const alimentoSchema = z.object({
     id: z.string(),
     nombre: z.string(),
     categoria: z.string(),
-    imagen: z.string(),
-    alergenos: z.array(z.enum(alergenosValidos)),
-    calorias_por_100g: z.number(),
-    proteinas: z.number()
+    imagen: z.string().optional(),
+    alergenos: z.array(z.enum(alergenosValidos)), // Mantenemos la validación estricta
+    calorias: z.number().min(0, "Las calorías no pueden ser negativas"),
+    proteinas: z.number().optional(),
+    isActive: z.boolean().optional(),
 });
 
 const createRoutineSchema = z.object({
@@ -57,7 +59,6 @@ const createRoutineSchema = z.object({
   alimentos: z.array(alimentoSchema),
 });
 
-// CAMBIO: El esquema ahora valida un parámetro de la URL (query)
 const getCreationOptionsSchema = z.object({
   usuarioId: z.string().min(1, "Query param 'usuarioId' is required"),
 });
@@ -73,7 +74,6 @@ export class OrchestratorController {
   constructor(private readonly service: IOrchestratorService) {}
 
   getCreationOptions = asyncHandler(async (req, res, next) => {
-    // CAMBIO: Se valida y extrae el dato de req.query en lugar de req.body
     const { usuarioId } = getCreationOptionsSchema.parse(req.query);
     const options = await this.service.getCreationOptions(usuarioId);
     res.status(200).json(options);

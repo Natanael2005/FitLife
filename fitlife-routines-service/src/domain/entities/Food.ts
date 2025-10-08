@@ -2,7 +2,9 @@ export interface FoodSnapshot {
   id: string;
   nombre: string;
   categoria: string;
+  imagen?: string;
   alergenos: string[];
-  calorias_por_100g: number;
+  calorias: number;
   proteinas: number;
+  isActive?: boolean;
 }
