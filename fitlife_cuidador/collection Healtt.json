@@ -1,0 +1,135 @@
+{
+  "info": {
+    "_postman_id": "fitlife-health-public-private-01",
+    "name": "FitLife — Health (public + private)",
+    "description": "Endpoints de Health para cuestionario (con Bearer) y para ver/actualizar ficha sin Bearer usando x-uid. Niveles: BAJO | INTERMEDIO | AVANZADO.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:3006" },
+    { "key": "userId", "value": "REEMPLAZA_CON_USER_UUID" },
+    { "key": "firebaseUid", "value": "REEMPLAZA_CON_FIREBASE_UID" },
+    { "key": "idToken", "value": "REEMPLAZA_CON_ID_TOKEN" }
+  ],
+  "item": [
+    {
+      "name": "GET Health Options (Bearer)",
+      "request": {
+        "method": "GET",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{idToken}}", "type": "text" }
+        ],
+        "url": { "raw": "{{baseUrl}}/api/health/options", "host": ["{{baseUrl}}"], "path": ["api","health","options"] }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status 200', () => pm.response.code === 200);",
+              "const json = pm.response.json();",
+              "pm.expect(json).to.have.property('allergies');",
+              "pm.expect(json).to.have.property('conditions');",
+              "pm.expect(Array.isArray(json.allergies)).to.be.true;",
+              "pm.expect(Array.isArray(json.conditions)).to.be.true;"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ]
+    },
+    {
+      "name": "PUT Health (Cuestionario) — con Bearer",
+      "request": {
+        "method": "PUT",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{idToken}}", "type": "text" },
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "url": { "raw": "{{baseUrl}}/api/health/user/{{userId}}", "host": ["{{baseUrl}}"], "path": ["api","health","user","{{userId}}"] },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"pesoKg\": 78.5,\n  \"estaturaCm\": 175,\n  \"nivel\": \"INTERMEDIO\",\n  \"alergias\": [\"GLUTEN\", \"LACTEOS\"],\n  \"condiciones\": [\"LESION_RODILLA\"]\n}"
+        },
+        "description": "Usa slug o UUID en 'alergias' y 'condiciones'. Nivel solo: BAJO|INTERMEDIO|AVANZADO."
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status 200', () => pm.response.code === 200);",
+              "const j = pm.response.json();",
+              "pm.expect(j).to.have.property('userId');",
+              "pm.expect(j).to.have.property('imc');",
+              "pm.expect(j).to.have.property('categoria_imc');",
+              "pm.expect(['BAJO','INTERMEDIO','AVANZADO']).to.include(j.nivel);"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ]
+    },
+    {
+      "name": "GET Health (Público) — sin Bearer (x-uid)",
+      "request": {
+        "method": "GET",
+        "header": [
+          { "key": "x-uid", "value": "{{firebaseUid}}" }
+        ],
+        "url": { "raw": "{{baseUrl}}/api/health/public/user/{{userId}}", "host": ["{{baseUrl}}"], "path": ["api","health","public","user","{{userId}}"] }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status 200', () => pm.response.code === 200);",
+              "const j = pm.response.json();",
+              "pm.expect(j).to.have.property('userId');",
+              "pm.expect(j).to.have.property('pesoKg');",
+              "pm.expect(j).to.have.property('estaturaCm');",
+              "pm.expect(j).to.have.property('nivel');",
+              "pm.expect(['BAJO','INTERMEDIO','AVANZADO', null]).to.include(j.nivel);",
+              "pm.expect(j).to.have.property('imc');",
+              "pm.expect(j).to.have.property('categoria_imc');"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ]
+    },
+    {
+      "name": "PUT Health (Público Update) — sin Bearer (x-uid)",
+      "request": {
+        "method": "PUT",
+        "header": [
+          { "key": "x-uid", "value": "{{firebaseUid}}" },
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "url": { "raw": "{{baseUrl}}/api/health/public/user/{{userId}}", "host": ["{{baseUrl}}"], "path": ["api","health","public","user","{{userId}}"] },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"pesoKg\": 79.1,\n  \"nivel\": \"AVANZADO\",\n  \"alergias\": [\"GLUTEN\", \"b9c2a7e2-89b8-4b01-9d7f-0f9d9b1b1111\"],\n  \"condiciones\": [\"LESION_RODILLA\"]\n}"
+        },
+        "description": "Update idempotente. Puedes mandar solo los campos que quieras cambiar. Nivel solo: BAJO|INTERMEDIO|AVANZADO. 'alergias'/'condiciones' aceptan slug o UUID."
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status 200', () => pm.response.code === 200);",
+              "const j = pm.response.json();",
+              "pm.expect(j).to.have.property('userId');",
+              "pm.expect(['BAJO','INTERMEDIO','AVANZADO']).to.include(j.nivel);",
+              "pm.expect(j).to.have.property('imc');",
+              "pm.expect(j).to.have.property('categoria_imc');"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ]
+    }
+  ]
+}
