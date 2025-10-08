@@ -47,6 +47,9 @@ const FoodSchema = z.object({
   nombre: z.string(),
   categoria: z.string().optional(),
   alergenos: z.array(z.string()).default([]),
+  imagen: z.string().url().optional(),
+  calorias: z.number().optional(),
+  proteinas: z.number().optional(),
 });
 
 const RoutineSchema = z.object({
@@ -71,13 +74,14 @@ r.get('/ejercicios-aptos', async (req, res) => {
     nombre: e.nombre,
     categoria: e.categoria ?? null,
     contraindicaciones: upArr(e.contraindicaciones),
-    nivel_minimo: toNivelArray(e.nivel as any),
+    nivel: toNivelArray(e.nivel as any),
     series_recomendadas: e.series_recomendadas ?? null,
     repeticiones_recomendadas: e.repeticiones_recomendadas ?? null,
-    gifUrl: "",
-    musculo_principal: "",
-    musculo_secundario: "",
-    instrucciones: [] as string[],
+    gifUrl: e.gifUrl,
+    musculo_principal: e.musculo_principal,
+    musculo_secundario: e.musculo_secundario,
+    instrucciones: e.instrucciones,
+    isActive: Boolean((e as any).isActive ?? (e as any).activo),
   }));
 
   res.json(out);
@@ -95,9 +99,10 @@ r.get('/alimentos-aptos', async (req, res) => {
     nombre: f.nombre,
     categoria: f.categoria ?? null,
     alergenos: upArr(f.alergenos),
-    imagen: "",
-    calorias_por_100g: null as number | null,
-    proteinas: null as number | null,
+    imagen: f.imagen,
+    calorias: f.calorias,
+    proteinas: f.proteinas,
+    isActive: Boolean((f as any).isActive ?? (f as any).activo),
   }));
 
   res.json(out);
@@ -121,20 +126,22 @@ r.get('/aptos', async (req, res) => {
       nivel: toNivelArray(e.nivel as any),        // array
       series_recomendadas: e.series_recomendadas ?? null,
       repeticiones_recomendadas: e.repeticiones_recomendadas ?? null,
-      gifUrl: "",
-      musculo_principal: "",
-      musculo_secundario: "",
-      instrucciones: [] as string[],
+      gifUrl: e.gifUrl,
+      musculo_principal: e.musculo_principal,
+      musculo_secundario: e.musculo_secundario,
+      instrucciones: e.instrucciones,
+      isActive: Boolean((e as any).isActive ?? (e as any).activo),
     }));
 
     const alimentosOut = alimentos.map(f => ({
       id: f.id,
       nombre: f.nombre,
-      categoria: f.categoria ?? null,
+      categoria: f.categoria,
       alergenos: upArr(f.alergenos),           // UPPER
-      imagen: "",
-      calorias_por_100g: null as number | null,
-      proteinas: null as number | null,
+      imagen: f.imagen,
+      calorias: f.calorias,
+      proteinas: f.proteinas,
+      isActive: Boolean((f as any).isActive ?? (f as any).activo),
     }));
 
     res.json({ ejercicios: ejerciciosOut, alimentos: alimentosOut });
@@ -167,19 +174,21 @@ r.get('/rutinas-aptas', async (req, res) => {
       nivel: toNivelArray(e.nivel as any),
       series_recomendadas: e.series_recomendadas ?? null,
       repeticiones_recomendadas: e.repeticiones_recomendadas ?? null,
-      gifUrl: "",
-      musculo_principal: "",
-      musculo_secundario: "",
-      instrucciones: [] as string[],
+      gifUrl: e.gifUrl,
+      musculo_principal: e.musculo_principal,
+      musculo_secundario: e.musculo_secundario,
+      instrucciones: e.instrucciones,
+      isActive: Boolean((e as any).isActive ?? (e as any).activo),
     })),
     alimentos: r.alimentos.map(f => ({
       id: f.id,
       nombre: f.nombre,
       categoria: f.categoria ?? null,
       alergenos: upArr(f.alergenos),
-      imagen: "",
-      calorias_por_100g: null as number | null,
-      proteinas: null as number | null,
+      imagen: f.imagen,
+      calorias: f.calorias,
+      proteinas: f.proteinas,
+      isActive: Boolean((f as any).isActive ?? (f as any).activo),
     })),
   }));
 

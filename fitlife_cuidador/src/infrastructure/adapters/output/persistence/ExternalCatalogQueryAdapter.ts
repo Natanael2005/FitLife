@@ -80,6 +80,7 @@ export class ExternalCatalogQueryAdapter implements CatalogQueryPort {
       musculo_principal: r.musculo_principal ?? null,
       musculo_secundario: r.musculo_secundario ?? null,
       instrucciones: toStringArray(r.instrucciones),
+      isActive: Boolean(r.activo),
     }));
   }
 
@@ -92,8 +93,9 @@ export class ExternalCatalogQueryAdapter implements CatalogQueryPort {
       categoria: r.categoria ?? null,
       alergenos: toTokenArray(r.alergenos),
       imagen: r.imagen ?? '',
-      calorias_por_100g: r.calorias_por_100g ?? null,
-      proteinas: r.proteinas ?? null,
+      calorias: r.calorias,
+      proteinas: r.proteinas,
+      isActive: Boolean(r.activo),
     }));
   }
 
@@ -129,7 +131,7 @@ export class ExternalCatalogQueryAdapter implements CatalogQueryPort {
               categoria: f.categoria ?? null,
               alergenos: toTokenArray(f.alergenos),
               imagen: f.imagen ?? '',
-              calorias_por_100g: f.calorias_por_100g ?? null,
+              calorias: f.calorias ?? null,
               proteinas: f.proteinas ?? null,
             }))
           : [],

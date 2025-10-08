@@ -11,7 +11,8 @@ SELECT
   e.gif_url,
   e.musculo_principal,
   e.musculo_secundario,
-  e.instrucciones
+  e.instrucciones,
+  e.activo
 FROM exercises e
 WHERE e.activo = true
 ORDER BY e.nombre ASC;
@@ -24,8 +25,9 @@ SELECT
   f.categoria,
   f.imagen      AS imagen,
   f.alergenos,
-  f.calorias    AS calorias_por_100g,
-  f.proteinas
+  f.calorias,
+  f.proteinas,
+  f.activo
 FROM foods f
 WHERE f.activo = true
 ORDER BY f.nombre ASC;
