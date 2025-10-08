@@ -10,7 +10,6 @@ const r = Router();
 
 /* ========== Schemas ========== */
 const publicParams = z.object({ id: z.string().uuid() });
-const uidSchema = z.object({ uid: z.string().min(6) });
 
 const publicPutBody = z.object({
   pesoKg: z.number().positive().max(500).optional(),
@@ -24,22 +23,14 @@ const privatePutBody = z.object({
   pesoKg: z.number().positive(),
   estaturaCm: z.number().int().min(100).max(250),
   nivel: z.enum(['BAJO','INTERMEDIO','AVANZADO']),
-  alergias: z.array(z.string().min(1)).default([]),    // slugs (si mandas uuids, conviértelo antes)
+  alergias: z.array(z.string().min(1)).default([]),
   condiciones: z.array(z.string().min(1)).default([]),
 });
-
-/* ========== Helpers ========== */
-function getUid(req: any): string {
-  const h = String(req.headers['x-uid'] ?? '').trim();
-  return h || String(req.query?.uid ?? '').trim();
-}
 
 /* ========== Opciones (Bearer) ========== */
 r.get("/options", firebaseAuth, async (_req, res) => {
   try {
     const ds = await getDataSource();
-    const port = new HealthPersistenceAdapter(ds);
-    // Reutilizamos los métodos de listados consultando con un userId dummy; o puedes tener otro adapter específico.
     const allergiesRepo = ds.getRepository(require('../../../../../domain/entities/Allergy').Allergy);
     const medRepo = ds.getRepository(require('../../../../../domain/entities/MedicalCondition').MedicalCondition);
     const [allergies, conditions] = await Promise.all([
@@ -70,7 +61,6 @@ r.put("/user/:id", firebaseAuth, async (req, res) => {
       condiciones: body.condiciones,
     });
 
-    // snapshot (incluye imc y categoria_imc)
     return res.json({ ...out, profile_completed: true });
   } catch (e: any) {
     if (e.message === "USER_NOT_FOUND") return res.status(404).json({ error: e.message });
@@ -79,37 +69,32 @@ r.put("/user/:id", firebaseAuth, async (req, res) => {
   }
 });
 
-/* ========== GET público (x-uid) ========== */
+/* ========== GET público (solo UUID) ========== */
 r.get("/public/user/:id", async (req, res) => {
   try {
     const { id } = publicParams.parse(req.params);
-    const uid = getUid(req);
-    uidSchema.parse({ uid });
 
     const ds = await getDataSource();
     const service = new HealthService(new HealthPersistenceAdapter(ds));
 
-    const out = await service.getPublic(id, uid);
+    const out = await service.getPublicById(id);
     return res.json(out);
   } catch (e: any) {
     if (e.message === "USER_NOT_FOUND") return res.status(404).json({ error: e.message });
-    if (e.message === "FORBIDDEN") return res.status(403).json({ error: e.message });
     return res.status(400).json({ error: "BAD_REQUEST", message: e?.message });
   }
 });
 
-/* ========== PUT público (x-uid) ========== */
+/* ========== PUT público (solo UUID) ========== */
 r.put("/public/user/:id", async (req, res) => {
   try {
     const { id } = publicParams.parse(req.params);
-    const uid = getUid(req);
-    uidSchema.parse({ uid });
     const body = publicPutBody.parse(req.body ?? {});
 
     const ds = await getDataSource();
     const service = new HealthService(new HealthPersistenceAdapter(ds));
 
-    const out = await service.putPublic(id, uid, {
+    const out = await service.putPublicById(id, {
       pesoKg: body.pesoKg,
       estaturaCm: body.estaturaCm,
       nivel: body.nivel as Nivel | undefined,
@@ -120,7 +105,6 @@ r.put("/public/user/:id", async (req, res) => {
     return res.json(out);
   } catch (e: any) {
     if (e.message === "USER_NOT_FOUND") return res.status(404).json({ error: e.message });
-    if (e.message === "FORBIDDEN") return res.status(403).json({ error: e.message });
     if (e.message === "MISSING_FIELDS") return res.status(400).json({ error: e.message });
     if (e.message === "NEED_HEIGHT") return res.status(400).json({ error: e.message });
     return res.status(400).json({ error: "BAD_REQUEST", message: e?.message });

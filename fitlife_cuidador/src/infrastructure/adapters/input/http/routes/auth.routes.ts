@@ -1,69 +1,71 @@
 import { Router } from 'express';
 import { z } from 'zod';
-import { firebaseAuth } from '../middlewares/firebaseAuth';
 import { getDataSource } from '../../../../config/datasource';
-import { User } from '../../../../../domain/entities/User';
+import { FirebaseAuthProviderAdapter } from '../../../output/external/FirebaseAuthProviderAdapter';
+import { UserRepositoryAdapter } from '../../../output/persistence/UserRepositoryAdapter';
+import { AuthService } from '../../../../../application/services/AuthService';
+import { firebaseAuth } from '../middlewares/firebaseAuth';
 
 const r = Router();
 
-// Validación inline (sin DTOs)
-const registerBasicSchema = z.object({
-  firstName: z.string().trim().min(1),
-  lastName:  z.string().trim().min(1),
-  gender:    z.enum(['masculino','femenino','otro']).optional()
+const registerSchema = z.object({
+  email: z.string().email(),
+  password: z.string().min(6),
+  firstName: z.string().min(1),
+  lastName: z.string().min(1),
+  gender: z.enum(['masculino','femenino','otro']).optional(),
+  returnSecureToken: z.boolean().optional(),
 });
 
-// POST /api/auth/register-basic
-r.post('/register-basic', firebaseAuth, async (req, res) => {
-  const parse = registerBasicSchema.safeParse(req.body);
-  if (!parse.success) return res.status(400).json({ error: 'VALIDATION_ERROR', details: parse.error.flatten() });
+const loginSchema = z.object({
+  email: z.string().email(),
+  password: z.string().min(6),
+  returnSecureToken: z.boolean().optional(),
+});
 
-  const { firebaseUid, email } = (req as any).user;
+const paramsId = z.object({ id: z.string().uuid() });
+
+async function svc() {
   const ds = await getDataSource();
-  const repo = ds.getRepository(User);
+  return new AuthService(
+    new FirebaseAuthProviderAdapter(),
+    new UserRepositoryAdapter(ds)
+  );
+}
 
-  // Buscar por UID o email para cubrir ambos casos
-  let user = await repo.findOne({ where: [{ firebaseUid }, { email }] });
-  const isNew = !user;
-
-  if (!user) {
-    user = repo.create({
-      firebaseUid,
-      email,
-      firstName: parse.data.firstName,
-      lastName:  parse.data.lastName,
-      gender:    parse.data.gender ?? null,
-      profileCompleted: false
-    });
-  } else {
-    user.firstName = parse.data.firstName;
-    user.lastName  = parse.data.lastName;
-    user.gender    = parse.data.gender ?? null;
-    if (email && email !== user.email) user.email = email; // sincroniza email si cambió en Firebase
+/* --------- POST /api/auth/register --------- */
+r.post('/register', async (req, res) => {
+  try {
+    const body = registerSchema.parse(req.body);
+    const out = await (await svc()).register(body);
+    return res.status(201).json(out);
+  } catch (e: any) {
+    const status = e?.status ?? (e?.message === 'MISSING_API_KEY' ? 500 : 400);
+    return res.status(status).json({ error: 'REGISTER_ERROR', message: e?.message || 'Error' });
   }
-
-  user = await repo.save(user);
-  return res.status(isNew ? 201 : 200).json({ id: user.id, profile_completed: user.profileCompleted });
 });
 
-// GET /api/auth/profile
-r.get('/profile', firebaseAuth, async (req, res) => {
-  const { firebaseUid } = (req as any).user;
+/* --------- POST /api/auth/login --------- */
+r.post('/login', async (req, res) => {
+  try {
+    const body = loginSchema.parse(req.body);
+    const out = await (await svc()).login(body);
+    return res.json(out);
+  } catch (e: any) {
+    const status = e?.status ?? (e?.message === 'MISSING_API_KEY' ? 500 : 400);
+    return res.status(status).json({ error: 'LOGIN_ERROR', message: e?.message || 'Error' });
+  }
+});
 
-  const ds = await getDataSource();
-  const repo = ds.getRepository(User);
-
-  const user = await repo.findOne({ where: { firebaseUid } });
-  if (!user) return res.status(404).json({ error: 'NOT_FOUND' });
-
-  return res.json({
-    id: user.id,
-    email: user.email,
-    firstName: user.firstName,
-    lastName: user.lastName,
-    gender: user.gender ?? null,
-    profile_completed: user.profileCompleted
-  });
+/* --------- ⬅️ NUEVO: GET /api/auth/public/user/:id (sin Bearer) --------- */
+r.get('/public/user/:id', async (req, res) => {
+  try {
+    const { id } = paramsId.parse(req.params);
+    const out = await (await svc()).profileById(id);
+    return res.json(out);
+  } catch (e: any) {
+    return res.status(e?.message === 'NOT_FOUND' ? 404 : 400).json({ error: e?.message || 'ERROR' });
+  }
 });
 
 export default r;

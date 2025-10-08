@@ -13,7 +13,7 @@ export type PrivatePutDto = {
   pesoKg: number;
   estaturaCm: number;
   nivel: Nivel;
-  alergias: string[];      // slugs o uuids: la ruta puede resolver, pero aquí asumimos slugs preferentemente
+  alergias: string[];
   condiciones: string[];
 };
 
@@ -63,18 +63,18 @@ export class HealthService {
     };
   }
 
-  // ---- públicos (sin Bearer) ----
-  async getPublic(userId: string, uid: string): Promise<HealthSnapshot> {
+  // =======================
+  // PÚBLICOS (solo UUID)
+  // =======================
+  async getPublicById(userId: string): Promise<HealthSnapshot> {
     const u = await this.port.findUserById(userId);
     if (!u) throw new Error("USER_NOT_FOUND");
-    if (u.firebaseUid !== uid) throw new Error("FORBIDDEN");
     return this.snapshot(userId);
   }
 
-  async putPublic(userId: string, uid: string, dto: PublicPutDto): Promise<HealthSnapshot> {
+  async putPublicById(userId: string, dto: PublicPutDto): Promise<HealthSnapshot> {
     const u = await this.port.findUserById(userId);
     if (!u) throw new Error("USER_NOT_FOUND");
-    if (u.firebaseUid !== uid) throw new Error("FORBIDDEN");
 
     // Si no existe ficha, exigir peso + estatura cuando se quiera crear
     const current = await this.port.readHealth(userId);
@@ -107,7 +107,9 @@ export class HealthService {
     return this.snapshot(userId);
   }
 
-  // ---- privado (con Bearer) para cuestionario ----
+  // =======================
+  // PRIVADO (Bearer)
+  // =======================
   async putPrivate(userId: string, firebaseUid: string, dto: PrivatePutDto): Promise<HealthSnapshot> {
     const u = await this.port.findUserById(userId);
     if (!u) throw new Error("USER_NOT_FOUND");
@@ -123,10 +125,17 @@ export class HealthService {
       categoria_imc
     });
 
-    // En tu PUT privado venían slugs/uuids; aquí asumimos slugs (si mandas uuids, los mapeas antes en la ruta)
     if (dto.alergias) await this.port.replaceAllergiesBySlugs(userId, dto.alergias);
     if (dto.condiciones) await this.port.replaceConditionsBySlugs(userId, dto.condiciones);
 
     return this.snapshot(userId);
+  }
+
+  // ====== (Compat) Métodos antiguos con uid: redirigen a los nuevos ======
+  async getPublic(userId: string, _uid?: string): Promise<HealthSnapshot> {
+    return this.getPublicById(userId);
+  }
+  async putPublic(userId: string, _uid: string, dto: PublicPutDto): Promise<HealthSnapshot> {
+    return this.putPublicById(userId, dto);
   }
 }
