@@ -1,4 +1,3 @@
-// src/infrastructure/config/catalog-queries.ts
 export const SQL_GET_ALL_EXERCISES = `
 SELECT
   e.id,
@@ -33,6 +32,18 @@ WHERE f.activo = true
 ORDER BY f.nombre ASC;
 `;
 
+export const SQL_GET_ALL_PUBLIC_ROUTINES_EXPANDED: string = `
+  SELECT
+    r.id,
+    r.nombre,
+    r.descripcion,
+    r.dias,
+    r.ejercicios AS ejercicios_json,
+    r.alimentos  AS alimentos_json
+  FROM public_routines r
+  WHERE r.publicada = TRUE
+  ORDER BY r.nombre ASC;
+`;
+
 // Si tienes una vista/lista de rutinas YA expandida (con JSON agregado), colócala aquí.
 // Debe devolver: id, nombre, categoria?, ejercicios_json[], alimentos_json[]
-export const SQL_GET_ALL_PUBLIC_ROUTINES_EXPANDED = ``; // <-- déjalo vacío si aún no tienes esa vista

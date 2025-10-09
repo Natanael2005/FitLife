@@ -103,40 +103,63 @@ export class ExternalCatalogQueryAdapter implements CatalogQueryPort {
     await this.ensureDS();
 
     const routinesSQL = (SQL_GET_ALL_PUBLIC_ROUTINES_EXPANDED ?? '').trim();
-    if (routinesSQL.length > 0) {
-      const rows = await this.ds.query(routinesSQL);
-      return rows.map((r: any) => ({
-        id: String(r.id),
-        nombre: r.nombre,
-        categoria: r.categoria ?? null,
-        ejercicios: Array.isArray(r.ejercicios_json)
-          ? r.ejercicios_json.map((e: any) => ({
-              id: String(e.id),
-              nombre: e.nombre,
-              categoria: e.categoria ?? null,
-              contraindicaciones: toTokenArray(e.contraindicaciones),
-              nivel: mapNivel(e.nivel),
-              series_recomendadas: e.series_recomendadas ?? null,
-              repeticiones_recomendadas: e.repeticiones_recomendadas ?? null,
-              gifUrl: e.gif_url ?? '',
-              musculo_principal: e.musculo_principal ?? null,
-              musculo_secundario: e.musculo_secundario ?? null,
-              instrucciones: toStringArray(e.instrucciones),
-            }))
-          : [],
-        alimentos: Array.isArray(r.alimentos_json)
-          ? r.alimentos_json.map((f: any) => ({
-              id: String(f.id),
-              nombre: f.nombre,
-              categoria: f.categoria ?? null,
-              alergenos: toTokenArray(f.alergenos),
-              imagen: f.imagen ?? '',
-              calorias: f.calorias ?? null,
-              proteinas: f.proteinas ?? null,
-            }))
-          : [],
+    if (!routinesSQL.length) return [];
+
+    const rows = await this.ds.query(routinesSQL);
+
+    const toDias = (v: unknown): string[] => {
+      if (Array.isArray(v)) return (v as unknown[]).map(asStr);
+      return [];
+    };
+
+    const asArray = (v: unknown): any[] => {
+      if (Array.isArray(v)) return v as any[];
+      // algunos drivers devuelven JSONB como string
+      const s = asStr(v);
+      if (s.startsWith('[')) {
+        try { const j = JSON.parse(s); if (Array.isArray(j)) return j; } catch {}
+      }
+      return [];
+    };
+
+    return rows.map((r: any) => {
+      const ejercicios = asArray(r.ejercicios_json).map((e: any) => ({
+        id: asStr(e.id),
+        nombre: e.nombre,
+        categoria: e.categoria ?? null,
+        contraindicaciones: toTokenArray(e.contraindicaciones),
+        nivel: mapNivel(e.nivel),
+        series_recomendadas: e.series_recomendadas ?? null,
+        repeticiones_recomendadas: e.repeticiones_recomendadas ?? null,
+        gifUrl: e.gif_url ?? '',
+        musculo_principal: e.musculo_principal ?? null,
+        musculo_secundario: e.musculo_secundario ?? null,
+        instrucciones: toStringArray(e.instrucciones),
+        // las rutinas publicadas normalmente contienen ítems activos
+        isActive: e.activo != null ? Boolean(e.activo) : true,
       }));
-    }
+
+      const alimentos = asArray(r.alimentos_json).map((f: any) => ({
+        id: asStr(f.id),
+        nombre: f.nombre,
+        categoria: f.categoria ?? null,
+        alergenos: toTokenArray(f.alergenos),
+        imagen: f.imagen ?? '',
+        calorias: f.calorias ?? null,
+        proteinas: f.proteinas ?? null,
+        isActive: f.activo != null ? Boolean(f.activo) : true,
+      }));
+
+      return {
+        id: asStr(r.id),
+        nombre: r.nombre,
+        // si luego agregas categoría a la rutina, ponla aquí; por ahora null
+        categoria: null,
+        dias: toDias(r.dias),
+        ejercicios,
+        alimentos,
+      };
+    });
 
     // Sin query de rutinas expandidas: vacío por ahora
     return [];
