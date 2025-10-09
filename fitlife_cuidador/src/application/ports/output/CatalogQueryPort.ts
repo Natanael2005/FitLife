@@ -36,6 +36,7 @@ export type CatalogRoutine = {
   dias: string[];
   ejercicios: CatalogExercise[];
   alimentos: CatalogFood[];
+  isPublished?: boolean;   // (no se usa en reglas, pero lo dejamos)
 };
 
 export interface CatalogQueryPort {

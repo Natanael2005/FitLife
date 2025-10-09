@@ -190,6 +190,7 @@ r.get('/rutinas-aptas', async (req, res) => {
       proteinas: f.proteinas,
       isActive: Boolean((f as any).isActive ?? (f as any).activo),
     })),
+    isPublished: Boolean((r as any).isPublished ?? (r as any).publicada),
   }));
 
   res.json(out);

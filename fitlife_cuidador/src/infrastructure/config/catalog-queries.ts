@@ -39,9 +39,10 @@ export const SQL_GET_ALL_PUBLIC_ROUTINES_EXPANDED: string = `
     r.descripcion,
     r.dias,
     r.ejercicios AS ejercicios_json,
-    r.alimentos  AS alimentos_json
+    r.alimentos  AS alimentos_json,
+    r.publicada
   FROM public_routines r
-  WHERE r.publicada = TRUE
+  WHERE r.publicada = true
   ORDER BY r.nombre ASC;
 `;
 

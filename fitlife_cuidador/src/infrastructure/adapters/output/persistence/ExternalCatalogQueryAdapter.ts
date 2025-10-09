@@ -158,6 +158,7 @@ export class ExternalCatalogQueryAdapter implements CatalogQueryPort {
         dias: toDias(r.dias),
         ejercicios,
         alimentos,
+        isPublished: Boolean(r.publicada),
       };
     });
 
