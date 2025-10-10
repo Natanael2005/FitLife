@@ -27,8 +27,8 @@ const privatePutBody = z.object({
   condiciones: z.array(z.string().min(1)).default([]),
 });
 
-/* ========== Opciones (Bearer) ========== */
-r.get("/options", firebaseAuth, async (_req, res) => {
+/* ========== Opciones (PÚBLICA, sin Bearer) ========== */
+r.get("/options", async (_req, res) => {
   try {
     const ds = await getDataSource();
     const allergiesRepo = ds.getRepository(require('../../../../../domain/entities/Allergy').Allergy);
