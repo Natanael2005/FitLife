@@ -5,16 +5,16 @@ export type PublicPutDto = {
   pesoKg?: number;
   estaturaCm?: number;
   nivel?: Nivel;
-  alergias?: string[];     // slugs
-  condiciones?: string[];  // slugs
+  alergias?: string[];     // slugs (puede ser [])
+  condiciones?: string[];  // slugs (puede ser [])
 };
 
 export type PrivatePutDto = {
   pesoKg: number;
   estaturaCm: number;
   nivel: Nivel;
-  alergias: string[];
-  condiciones: string[];
+  alergias: string[];      // puede ser []
+  condiciones: string[];   // puede ser []
 };
 
 export class HealthService {
@@ -101,8 +101,9 @@ export class HealthService {
       categoria_imc
     });
 
-    if (dto.alergias) await this.port.replaceAllergiesBySlugs(userId, dto.alergias);
-    if (dto.condiciones) await this.port.replaceConditionsBySlugs(userId, dto.condiciones);
+    // Acepta [] para limpiar relaciones
+    if (dto.alergias !== undefined) await this.port.replaceAllergiesBySlugs(userId, dto.alergias);
+    if (dto.condiciones !== undefined) await this.port.replaceConditionsBySlugs(userId, dto.condiciones);
 
     return this.snapshot(userId);
   }
@@ -125,8 +126,9 @@ export class HealthService {
       categoria_imc
     });
 
-    if (dto.alergias) await this.port.replaceAllergiesBySlugs(userId, dto.alergias);
-    if (dto.condiciones) await this.port.replaceConditionsBySlugs(userId, dto.condiciones);
+    // Acepta [] para limpiar relaciones
+    if (dto.alergias !== undefined) await this.port.replaceAllergiesBySlugs(userId, dto.alergias);
+    if (dto.condiciones !== undefined) await this.port.replaceConditionsBySlugs(userId, dto.condiciones);
 
     return this.snapshot(userId);
   }

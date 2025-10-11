@@ -1,11 +1,12 @@
 import { DataSource } from "typeorm";
 import { HealthPersistencePort } from "../../../../application/ports/output/HealthPersistencePort";
-import { User } from "./../../../../domain/entities/User";
-import { UserHealthData, Nivel, CategoriaIMC } from "./../../../../domain/entities/UserHealthData";
-import { UserAllergy } from "./../../../../domain/entities/UserAllergy";
-import { UserMedicalCondition } from "./../../../../domain/entities/UserMedicalCondition";
-import { Allergy } from "./../../../../domain/entities/Allergy";
-import { MedicalCondition } from "./../../../../domain/entities/MedicalCondition";
+import { User } from "../../../../domain/entities/User";
+import { UserHealthData, Nivel, CategoriaIMC } from "../../../../domain/entities/UserHealthData";
+import { UserAllergy } from "../../../../domain/entities/UserAllergy";
+import { UserMedicalCondition } from "../../../../domain/entities/UserMedicalCondition";
+import { Allergy } from "../../../../domain/entities/Allergy";
+import { MedicalCondition } from "../../../../domain/entities/MedicalCondition";
+import { cleanTokens } from "../../../../shared/tokens";
 
 export class HealthPersistenceAdapter implements HealthPersistencePort {
   constructor(private readonly ds: DataSource) {}
@@ -33,7 +34,7 @@ export class HealthPersistenceAdapter implements HealthPersistencePort {
       .createQueryBuilder("a")
       .innerJoin(UserAllergy, "ua", "ua.allergy_id = a.id AND ua.user_id = :id", { id: userId })
       .getMany();
-    return rows.map(r => ({ slug: r.slug, nombre: (r as any).name ?? (r as any).nombre ?? r.slug }));
+    return rows.map(r => ({ slug: r.slug, nombre: (r as any).nombre ?? (r as any).name ?? r.slug }));
   }
 
   async listConditionsByUser(userId: string) {
@@ -41,7 +42,7 @@ export class HealthPersistenceAdapter implements HealthPersistencePort {
       .createQueryBuilder("m")
       .innerJoin(UserMedicalCondition, "um", "um.condition_id = m.id AND um.user_id = :id", { id: userId })
       .getMany();
-    return rows.map(r => ({ slug: r.slug, nombre: (r as any).name ?? (r as any).nombre ?? r.slug }));
+    return rows.map(r => ({ slug: r.slug, nombre: (r as any).nombre ?? (r as any).name ?? r.slug }));
   }
 
   async upsertHealth(userId: string, patch: {
@@ -64,19 +65,38 @@ export class HealthPersistenceAdapter implements HealthPersistencePort {
     }
   }
 
-  async replaceAllergiesBySlugs(userId: string, slugs: string[]) {
-    const ids = await this.ds.getRepository(Allergy)
-      .createQueryBuilder("a").where("a.slug IN (:...s)", { s: slugs }).getMany();
-    const uaRepo = this.ds.getRepository(UserAllergy);
-    await uaRepo.delete({ user_id: userId } as any);
-    if (ids.length) await uaRepo.insert(ids.map(a => ({ user_id: userId, allergy_id: a.id } as any)));
+  // [] => sin relaciones. Limpia sentinelas y reescribe puentes
+  async replaceAllergiesBySlugs(userId: string, slugs: string[]): Promise<void> {
+    const up = cleanTokens(slugs ?? []);
+    const repoUA = this.ds.getRepository(UserAllergy);
+    await repoUA.delete({ user_id: userId });
+    if (up.length === 0) return;
+
+    const alergias = await this.ds.getRepository(Allergy)
+      .createQueryBuilder("a").where("a.slug IN (:...s)", { s: up }).getMany();
+
+    if (alergias.length === 0) return;
+
+    await repoUA.createQueryBuilder()
+      .insert()
+      .values(alergias.map(a => ({ user_id: userId, allergy_id: a.id }))) // ← a.id (no a.allergy_id)
+      .execute();
   }
 
-  async replaceConditionsBySlugs(userId: string, slugs: string[]) {
-    const ids = await this.ds.getRepository(MedicalCondition)
-      .createQueryBuilder("m").where("m.slug IN (:...s)", { s: slugs }).getMany();
-    const umRepo = this.ds.getRepository(UserMedicalCondition);
-    await umRepo.delete({ user_id: userId } as any);
-    if (ids.length) await umRepo.insert(ids.map(m => ({ user_id: userId, condition_id: m.id } as any)));
+  async replaceConditionsBySlugs(userId: string, slugs: string[]): Promise<void> {
+    const up = cleanTokens(slugs ?? []);
+    const repoUMC = this.ds.getRepository(UserMedicalCondition);
+    await repoUMC.delete({ user_id: userId });
+    if (up.length === 0) return;
+
+    const conds = await this.ds.getRepository(MedicalCondition)
+      .createQueryBuilder("m").where("m.slug IN (:...s)", { s: up }).getMany();
+
+    if (conds.length === 0) return;
+
+    await repoUMC.createQueryBuilder()
+      .insert()
+      .values(conds.map(m => ({ user_id: userId, condition_id: m.id }))) // ← m.id (no m.condition_id)
+      .execute();
   }
 }

@@ -15,16 +15,18 @@ const publicPutBody = z.object({
   pesoKg: z.number().positive().max(500).optional(),
   estaturaCm: z.number().int().positive().max(300).optional(),
   nivel: z.enum(['BAJO','INTERMEDIO','AVANZADO']).optional(),
-  alergias: z.array(z.string().min(1)).optional(),     // slugs
-  condiciones: z.array(z.string().min(1)).optional(),  // slugs
+  // PERMITIR [] u omitir
+  alergias: z.array(z.string()).optional(),     // slugs
+  condiciones: z.array(z.string()).optional(),  // slugs
 });
 
 const privatePutBody = z.object({
   pesoKg: z.number().positive(),
   estaturaCm: z.number().int().min(100).max(250),
   nivel: z.enum(['BAJO','INTERMEDIO','AVANZADO']),
-  alergias: z.array(z.string().min(1)).default([]),
-  condiciones: z.array(z.string().min(1)).default([]),
+  // PERMITIR [] explícitos
+  alergias: z.array(z.string()).default([]),
+  condiciones: z.array(z.string()).default([]),
 });
 
 /* ========== Opciones (PÚBLICA, sin Bearer) ========== */

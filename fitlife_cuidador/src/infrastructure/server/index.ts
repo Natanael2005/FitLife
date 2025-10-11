@@ -1,6 +1,7 @@
 import 'reflect-metadata';
 import express from 'express';
 import cors from 'cors';
+import { httpLogger, logger } from '../config/logger';   // ya lo tienes
 import dotenv from 'dotenv';
 import { getDataSource } from '../config/datasource';
 import { seedCatalogs } from '../config/seedCatalogs';
@@ -19,16 +20,25 @@ async function main() {
   }
 
   const app = express();
-  app.use(cors());
+
+  app.set('trust proxy', true);  
+  app.use(httpLogger);            
+
+  app.use(cors({
+    origin: 'http://localhost:3000',
+    credentials: true,
+    methods: ['GET','POST','PUT','PATCH','DELETE','OPTIONS'],
+    allowedHeaders: ['Content-Type','Authorization','X-Requested-With'],
+    exposedHeaders: ['x-request-id'],
+  }));
   app.use(express.json());
 
   app.get('/ping', (_req, res) => res.json({ ok: true }));
 
-  // 👇 MONTA /api/auth/*
   registerRoutes(app);
 
   const PORT = Number(process.env.PORT) || 3003;
-  app.listen(PORT, () => console.log(`🚀 API en http://localhost:${PORT}`));
+  app.listen(PORT, () => logger.info(`API en http://localhost:${PORT}`));
 }
 
 main().catch((e) => {

@@ -6,32 +6,13 @@ import {
   SQL_GET_ALL_FOODS,
   SQL_GET_ALL_PUBLIC_ROUTINES_EXPANDED
 } from '../../../config/catalog-queries';
+import { cleanTokens } from '../../../../shared/tokens';
 
 type Nivel = 'BAJO' | 'INTERMEDIO' | 'AVANZADO';
 
 // -------- Helpers tipados (evitan 'never') --------
 const asStr = (v: unknown): string =>
   v === null || v === undefined ? '' : String(v);
-
-const normalizeToken = (s: unknown): string =>
-  asStr(s).trim().replace(/\s+/g, '_').toUpperCase();
-
-const toTokenArray = (v: unknown): string[] => {
-  if (Array.isArray(v)) {
-    return (v as unknown[]).map(normalizeToken).filter((t): t is string => t.length > 0);
-  }
-  const str = asStr(v).trim();
-  if (!str) return [];
-  if (str.startsWith('[')) { // JSON array
-    try {
-      const arr = JSON.parse(str) as unknown[];
-      if (Array.isArray(arr)) {
-        return arr.map(normalizeToken).filter((t): t is string => t.length > 0);
-      }
-    } catch { /* ignore */ }
-  }
-  return str.split(',').map(normalizeToken).filter((t): t is string => t.length > 0);
-};
 
 const toStringArray = (v: unknown): string[] => {
   if (Array.isArray(v)) return (v as unknown[]).map(asStr);
@@ -72,7 +53,8 @@ export class ExternalCatalogQueryAdapter implements CatalogQueryPort {
       id: String(r.id),
       nombre: r.nombre,
       categoria: r.categoria ?? null,
-      contraindicaciones: toTokenArray(r.contraindicaciones),
+      // LIMPIO "NINGUNO" y similares → []
+      contraindicaciones: cleanTokens(r.contraindicaciones),
       nivel: mapNivel(r.nivel),
       series_recomendadas: r.series_recomendadas ?? null,
       repeticiones_recomendadas: r.repeticiones_recomendadas ?? null,
@@ -87,16 +69,20 @@ export class ExternalCatalogQueryAdapter implements CatalogQueryPort {
   async getAllFoods() {
     await this.ensureDS();
     const rows = await this.ds.query(SQL_GET_ALL_FOODS);
-    return rows.map((r: any) => ({
-      id: String(r.id),
-      nombre: r.nombre,
-      categoria: r.categoria ?? null,
-      alergenos: toTokenArray(r.alergenos),
-      imagen: r.imagen ?? '',
-      calorias: r.calorias,
-      proteinas: r.proteinas,
-      isActive: Boolean(r.activo),
-    }));
+    return rows.map((r: any) => {
+      const caloriasRaw = r.calorias_por_100g ?? r.calorias;
+      return {
+        id: String(r.id),
+        nombre: r.nombre,
+        categoria: r.categoria ?? null,
+        // LIMPIO "NINGUNO" → []
+        alergenos: cleanTokens(r.alergenos),
+        imagen: r.imagen ?? '',
+        calorias: caloriasRaw != null ? Number(caloriasRaw) : null,
+        proteinas: r.proteinas != null ? Number(r.proteinas) : null,
+        isActive: Boolean(r.activo),
+      };
+    });
   }
 
   async getAllPublicRoutinesExpanded() {
@@ -127,7 +113,8 @@ export class ExternalCatalogQueryAdapter implements CatalogQueryPort {
         id: asStr(e.id),
         nombre: e.nombre,
         categoria: e.categoria ?? null,
-        contraindicaciones: toTokenArray(e.contraindicaciones),
+        // LIMPIO tokens anidados
+        contraindicaciones: cleanTokens(e.contraindicaciones ?? []),
         nivel: mapNivel(e.nivel),
         series_recomendadas: e.series_recomendadas ?? null,
         repeticiones_recomendadas: e.repeticiones_recomendadas ?? null,
@@ -135,7 +122,6 @@ export class ExternalCatalogQueryAdapter implements CatalogQueryPort {
         musculo_principal: e.musculo_principal ?? null,
         musculo_secundario: e.musculo_secundario ?? null,
         instrucciones: toStringArray(e.instrucciones),
-        // las rutinas publicadas normalmente contienen ítems activos
         isActive: e.activo != null ? Boolean(e.activo) : true,
       }));
 
@@ -143,17 +129,17 @@ export class ExternalCatalogQueryAdapter implements CatalogQueryPort {
         id: asStr(f.id),
         nombre: f.nombre,
         categoria: f.categoria ?? null,
-        alergenos: toTokenArray(f.alergenos),
+        // LIMPIO tokens anidados
+        alergenos: cleanTokens(f.alergenos ?? []),
         imagen: f.imagen ?? '',
-        calorias: f.calorias ?? null,
-        proteinas: f.proteinas ?? null,
+        calorias: f.calorias != null ? Number(f.calorias) : null,
+        proteinas: f.proteinas != null ? Number(f.proteinas) : null,
         isActive: f.activo != null ? Boolean(f.activo) : true,
       }));
 
       return {
         id: asStr(r.id),
         nombre: r.nombre,
-        // si luego agregas categoría a la rutina, ponla aquí; por ahora null
         categoria: null,
         dias: toDias(r.dias),
         ejercicios,
@@ -161,8 +147,5 @@ export class ExternalCatalogQueryAdapter implements CatalogQueryPort {
         isPublished: Boolean(r.publicada),
       };
     });
-
-    // Sin query de rutinas expandidas: vacío por ahora
-    return [];
   }
 }
