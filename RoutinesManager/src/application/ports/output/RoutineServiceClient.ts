@@ -1,6 +1,6 @@
 export interface RoutineDetails {
   id: string;
-  name: string;
+  nombre: string;
   description: string;
   ejercicios: any[];
   alimentos: any[];

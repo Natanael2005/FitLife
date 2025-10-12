@@ -22,7 +22,7 @@ export class HttpRoutineServiceClient implements RoutineServiceClient {
     
     return {
       id: data.id,
-      name: data.nombre,
+      nombre: data.nombre,
       description: data.descripcion || '',
       ejercicios: data.ejercicios || [],
       alimentos: data.alimentos || [],
