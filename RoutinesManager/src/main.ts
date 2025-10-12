@@ -30,7 +30,7 @@ async function bootstrap() {
   
   const controller = new RoutineManagerController(routineManagerService);
 
-  app.use('/api/manager', createManagerRoutes(controller));
+  app.use('/api/manager', createManagerRoutes(controller));    
 
   app.get('/health', (req, res) => {
     res.json({ 
