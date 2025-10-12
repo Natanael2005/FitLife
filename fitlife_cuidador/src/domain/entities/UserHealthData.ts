@@ -1,6 +1,6 @@
 import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
 
-export type Nivel = 'PRINCIPIANTE' | 'INTERMEDIO' | 'AVANZADO';
+export type Nivel = 'BAJO' | 'INTERMEDIO' | 'AVANZADO';
 export type CategoriaIMC =
   | 'BAJO_PESO' | 'NORMAL' | 'SOBREPESO'
   | 'OBESIDAD_I' | 'OBESIDAD_II' | 'OBESIDAD_III';
@@ -26,6 +26,6 @@ export class UserHealthData {
   categoria_imc!: CategoriaIMC;
 
   @Column('varchar', { name: 'nivel', length: 20 })
-  nivel!: 'BAJO' | 'INTERMEDIO' | 'ALTO';
+  nivel!: 'BAJO' | 'INTERMEDIO' | 'AVANZADO';
 }
 

@@ -27,6 +27,9 @@ export class User {
   @Column({ name: 'profile_completed', default: false })
   profileCompleted!: boolean;
 
+  @Column({ name: 'notification_token', type: 'varchar', length: 100, nullable: true })
+  notificationToken!: string | null;
+
   @CreateDateColumn({ name: 'created_at', type: 'timestamptz' })
   createdAt!: Date;
 

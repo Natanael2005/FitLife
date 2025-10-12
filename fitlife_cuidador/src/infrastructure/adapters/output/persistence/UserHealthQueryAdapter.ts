@@ -5,6 +5,7 @@ import { UserAllergy } from '../../../../domain/entities/UserAllergy';
 import { UserMedicalCondition } from '../../../../domain/entities/UserMedicalCondition';
 import { Allergy } from '../../../../domain/entities/Allergy';
 import { MedicalCondition } from '../../../../domain/entities/MedicalCondition';
+import { cleanTokens } from '../../../../shared/tokens';
 
 export class UserHealthQueryAdapter implements UserHealthQueryPort {
   constructor(private readonly ds: DataSource) {}
@@ -12,9 +13,9 @@ export class UserHealthQueryAdapter implements UserHealthQueryPort {
   async getHealthContext(userId: string): Promise<HealthContext> {
     const uhdRepo = this.ds.getRepository(UserHealthData);
     const health = await uhdRepo.findOne({ where: { user_id: userId } });
+
     if (!health) {
-      const err: any = new Error('Health data not found');
-      err.code = 'NOT_FOUND';
+      const err: any = new Error('NOT_FOUND');
       throw err;
     }
 
@@ -33,15 +34,21 @@ export class UserHealthQueryAdapter implements UserHealthQueryPort {
       .where('umc.user_id = :uid', { uid: userId })
       .getRawMany();
 
-    const imc = Number(health.imc);
-    const allergies = new Set<string>((rowsAllergies ?? []).map(r => String(r.slug).toUpperCase()));
-    const conditions = new Set<string>((rowsConds ?? []).map(r => String(r.slug).toUpperCase()));
+    // HealthContext.imc es number (no null) → usa 0 cuando falte
+    const imc: HealthContext['imc'] = health.imc != null ? Number(health.imc) : 0;
 
-    return {
-      imc,
-      nivel: health.nivel as any, // 'PRINCIPIANTE' | 'INTERMEDIO' | 'AVANZADO'
-      allergies,
-      conditions,
-    };
+    const allergies = new Set<string>(cleanTokens((rowsAllergies ?? []).map(r => String(r.slug))));
+    const conditions = new Set<string>(cleanTokens((rowsConds ?? []).map(r => String(r.slug))));
+
+    // HealthContext.nivel es el 'Nivel' del puerto (PRINCIPIANTE|INTERMEDIO|AVANZADO)
+    const nivel: HealthContext['nivel'] = (() => {
+      const raw = String((health as any).nivel ?? '').toUpperCase(); // BD: BAJO|INTERMEDIO|AVANZADO
+      if (raw === 'BAJO') return 'PRINCIPIANTE' as HealthContext['nivel'];
+      if (raw === 'INTERMEDIO') return 'INTERMEDIO' as HealthContext['nivel'];
+      if (raw === 'AVANZADO') return 'AVANZADO' as HealthContext['nivel'];
+      return 'PRINCIPIANTE' as HealthContext['nivel'];
+    })();
+
+    return { imc, nivel, allergies, conditions };
   }
 }

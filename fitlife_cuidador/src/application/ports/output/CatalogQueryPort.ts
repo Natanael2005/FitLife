@@ -1,4 +1,4 @@
-export type Nivel = 'PRINCIPIANTE' | 'INTERMEDIO' | 'AVANZADO';
+export type Nivel = 'BAJO' | 'INTERMEDIO' | 'AVANZADO';
 
 export type CatalogExercise = {
   id: string;
@@ -9,14 +9,24 @@ export type CatalogExercise = {
   nivel: Nivel;
   series_recomendadas?: number | null;
   repeticiones_recomendadas?: number | null;
+  gifUrl?: string | null;
+  musculo_principal?: string | null;
+  musculo_secundario?: string | null;
+  instrucciones?: string[];    // array de pasos
+  activo?: boolean;        // (no se usa en reglas, pero lo dejamos)
 };
 
 export type CatalogFood = {
+  isActive: any;
   id: string;
   slug: string;                // UPPER
   nombre: string;
   categoria?: string | null;
   alergenos: string[];         // UPPER
+  imagen?: string | null;
+  calorias: number | null;
+  proteinas: number | null;
+  activo?: boolean;        // (no se usa en reglas, pero lo dejamos)
 };
 
 export type CatalogRoutine = {
@@ -26,6 +36,7 @@ export type CatalogRoutine = {
   dias: string[];
   ejercicios: CatalogExercise[];
   alimentos: CatalogFood[];
+  isPublished?: boolean;   // (no se usa en reglas, pero lo dejamos)
 };
 
 export interface CatalogQueryPort {

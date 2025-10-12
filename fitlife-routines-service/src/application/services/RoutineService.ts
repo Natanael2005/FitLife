@@ -18,16 +18,20 @@ const ExerciseSchema = z.object({
   gifUrl: z.string(),
   musculo_principal: z.string(),
   musculo_secundario: z.string(),
-  instrucciones: z.array(z.string()).optional()
+  instrucciones: z.array(z.string()).optional(),
+  isActive: z.boolean().optional()
+
 });
 
 const FoodSchema = z.object({
   id: z.string().min(1),
   nombre: z.string().min(1),
   categoria: z.string().min(1),
+  imagen: z.string().optional(),
   alergenos: z.array(z.string()),
-  calorias_por_100g: z.number().nonnegative(),
-  proteinas: z.number().nonnegative()
+  calorias: z.number().nonnegative(),
+  proteinas: z.number().nonnegative(),
+  isActive: z.boolean().optional()
 });
 
 const UserRoutineSchema = z.object({
