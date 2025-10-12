@@ -24,9 +24,8 @@ export class HttpRoutineServiceClient implements RoutineServiceClient {
       id: data.id,
       name: data.nombre,
       description: data.descripcion || '',
-      exercises: data.ejercicios || [],
-      difficulty: this.mapDifficulty(data.ejercicios),  
-      duration: this.calculateDuration(data.ejercicios),
+      ejercicios: data.ejercicios || [],
+      Alimentos: data.alimentos || [],
       isPublic: data.publicada !== false
     };
   } catch (error: any) {
@@ -54,19 +53,4 @@ export class HttpRoutineServiceClient implements RoutineServiceClient {
     }
   }
 
-  private mapDifficulty(ejercicios: any[]): string {
-  if (!ejercicios || ejercicios.length === 0) return 'BAJO';
-  
-  const niveles = ejercicios.map(e => e.nivel_minimo || 'BASICO');
-  
-  if (niveles.some(n => n === 'AVANZADO')) return 'AVANZADO';
-  if (niveles.some(n => n === 'INTERMEDIO')) return 'INTERMEDIO';
-  return 'BAJO';
-  }
-
-  private calculateDuration(ejercicios: any[]): number {
-    if (!ejercicios || ejercicios.length === 0) return 30;
-    
-    return ejercicios.length * 4;
-  }
 }

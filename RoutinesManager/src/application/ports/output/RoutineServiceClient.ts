@@ -2,9 +2,8 @@ export interface RoutineDetails {
   id: string;
   name: string;
   description: string;
-  exercises: any[];
-  difficulty: string;
-  duration: number;
+  ejercicios: any[];
+  Alimentos: any[];
   isPublic: boolean;
 }
 
