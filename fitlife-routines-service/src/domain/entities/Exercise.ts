@@ -4,7 +4,7 @@ export interface ExerciseSnapshot {
   categoria: string;
   contraindicaciones: string[];
   // nivel: 'BAJO' | 'INTERMEDIO' | 'AVANZADO';
-  nivel: string; // Temporalmente deshabilitado el enum para permitir niveles personalizados
+  nivel: string[]; // Temporalmente deshabilitado el enum para permitir niveles personalizados
   series_recomendadas: number;
   repeticiones_recomendadas: number;
   gif_url: string;
