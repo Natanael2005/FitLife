@@ -44,10 +44,10 @@ export class RoutineManagerService {
       userRoutineId: ur.id,
       userId: ur.usuario_id,
       routineId: ur.id,
-      name: ur.nombre,
-      days: ur.dias,
-      exercises: ur.ejercicios,
-      foods: ur.alimentos,
+      nombre: ur.nombre,
+      dias: ur.dias,
+      ejercicios: ur.ejercicios,
+      alimentos: ur.alimentos,
       createdAt: ur.created_at,
       updatedAt: ur.updated_at
     }));
