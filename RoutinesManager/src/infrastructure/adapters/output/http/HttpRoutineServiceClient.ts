@@ -25,6 +25,7 @@ export class HttpRoutineServiceClient implements RoutineServiceClient {
       nombre: data.nombre,
       description: data.descripcion || '',
       ejercicios: data.ejercicios || [],
+      dias: data.dias || [],
       alimentos: data.alimentos || [],
       isPublic: data.publicada !== false
     };
@@ -33,6 +34,7 @@ export class HttpRoutineServiceClient implements RoutineServiceClient {
       throw new Error(`Routine ${routineId} not found`);
     }
     throw new Error(`Failed to fetch routine details: ${error.message}`);
+    console.log(error.message);
   }
 }
 
@@ -41,6 +43,7 @@ export class HttpRoutineServiceClient implements RoutineServiceClient {
       const promises = routineIds.map(id => 
         this.getRoutineDetails(id).catch(err => {
           console.warn(`Failed to fetch routine ${id}:`, err.message);
+          console.log(err.message);
           return null;
         })
       );
