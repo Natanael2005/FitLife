@@ -6,7 +6,7 @@ export interface ExerciseSnapshot {
   nivel: 'BAJO' | 'INTERMEDIO' | 'AVANZADO';
   series_recomendadas: number;
   repeticiones_recomendadas: number;
-  gifUrl: string;
+  gif_url: string;
   musculo_principal: string;
   musculo_secundario: string;
   instrucciones?: string[];

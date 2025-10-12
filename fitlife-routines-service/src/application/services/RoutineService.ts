@@ -15,7 +15,7 @@ const ExerciseSchema = z.object({
   nivel: z.enum(['BAJO', 'INTERMEDIO', 'AVANZADO']),
   series_recomendadas: z.number().int().nonnegative(),
   repeticiones_recomendadas: z.number().int().positive(),
-  gifUrl: z.string(),
+  gif_url: z.string(),
   musculo_principal: z.string(),
   musculo_secundario: z.string(),
   instrucciones: z.array(z.string()).optional(),
