@@ -12,7 +12,8 @@ const ExerciseSchema = z.object({
   nombre: z.string().min(1),
   categoria: z.string().min(1),
   contraindicaciones: z.array(z.string()),
-  nivel: z.enum(['BAJO', 'INTERMEDIO', 'AVANZADO']),
+  // nivel: z.enum(['BAJO', 'INTERMEDIO', 'AVANZADO']),
+  nivel: z.string().min(1), // Temporalmente deshabilitado el enum para permitir niveles personalizados
   series_recomendadas: z.number().int().nonnegative(),
   repeticiones_recomendadas: z.number().int().positive(),
   gif_url: z.string(),
