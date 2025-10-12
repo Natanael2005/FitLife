@@ -29,6 +29,7 @@ export class HttpRoutineServiceClient implements RoutineServiceClient {
       duration: this.calculateDuration(data.ejercicios),
       isPublic: data.publicada !== false
     };
+    
   } catch (error: any) {
     if (axios.isAxiosError(error) && error.response?.status === 404) {
       throw new Error(`Routine ${routineId} not found`);
