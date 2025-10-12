@@ -3,10 +3,11 @@ export interface ExerciseSnapshot {
   nombre: string;
   categoria: string;
   contraindicaciones: string[];
-  nivel: 'BAJO' | 'INTERMEDIO' | 'AVANZADO';
+  // nivel: 'BAJO' | 'INTERMEDIO' | 'AVANZADO';
+  nivel: string[]; // Temporalmente deshabilitado el enum para permitir niveles personalizados
   series_recomendadas: number;
   repeticiones_recomendadas: number;
-  gifUrl: string;
+  gif_url: string;
   musculo_principal: string;
   musculo_secundario: string;
   instrucciones?: string[];
