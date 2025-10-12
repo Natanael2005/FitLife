@@ -15,27 +15,26 @@ export class HttpRoutineServiceClient implements RoutineServiceClient {
   }
 
   async getRoutineDetails(routineId: string): Promise<RoutineDetails> {
-    try {
-      const response = await this.client.get(`/rutinas-default/${routineId}`);
-      
-      const data = response.data;
-      
-      return {
-        id: data.id,
-        name: data.nombre,
-        description: data.descripcion || '',
-        exercises: data.ejercicios || [],
-        difficulty: this.mapDifficulty(data.ejercicios),
-        duration: this.calculateDuration(data.ejercicios),
-        isPublic: data.publicada !== false
-      };
-    } catch (error: any) {
-      if (axios.isAxiosError(error) && error.response?.status === 404) {
-        throw new Error(`Routine ${routineId} not found`);
-      }
-      throw new Error(`Failed to fetch routine details: ${error.message}`);
+  try {
+    const response = await this.client.get(`/rutinas-default/${routineId}`);
+    
+    const data = response.data;
+    
+    return {
+      id: data.id,
+      name: data.nombre,
+      description: data.descripcion || '',
+      ejercicios: data.ejercicios || [],
+      alimentos: data.alimentos || [],
+      isPublic: data.publicada !== false
+    };
+  } catch (error: any) {
+    if (axios.isAxiosError(error) && error.response?.status === 404) {
+      throw new Error(`Routine ${routineId} not found`);
     }
+    throw new Error(`Failed to fetch routine details: ${error.message}`);
   }
+}
 
   async getMultipleRoutines(routineIds: string[]): Promise<RoutineDetails[]> {
     try {
@@ -52,21 +51,5 @@ export class HttpRoutineServiceClient implements RoutineServiceClient {
       console.error('Failed to fetch multiple routines:', error);
       return [];
     }
-  }
-
-  private mapDifficulty(ejercicios: any[]): string {
-    if (!ejercicios || ejercicios.length === 0) return 'beginner';
-    
-    const niveles = ejercicios.map(e => e.nivel_minimo || 'BASICO');
-    
-    if (niveles.some(n => n === 'AVANZADO')) return 'advanced';
-    if (niveles.some(n => n === 'INTERMEDIO')) return 'intermediate';
-    return 'beginner';
-  }
-
-  private calculateDuration(ejercicios: any[]): number {
-    if (!ejercicios || ejercicios.length === 0) return 30;
-    
-    return ejercicios.length * 4;
   }
 }
