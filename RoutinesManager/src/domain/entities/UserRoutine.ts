@@ -1,32 +1,25 @@
 export class UserRoutine {
   constructor(
-    public readonly id: number,
+    public readonly id: string,
     public readonly usuario_id: string,
-    public readonly rutina_id: string,
-    public readonly assignedAt: Date,
-    public readonly isActive: boolean,
-    public readonly createdAt: Date
+    public readonly nombre: string,
+    public readonly dias: string[],
+    public readonly ejercicios: any[],
+    public readonly alimentos: any[],
+    public readonly created_at: Date,
+    public readonly updated_at: Date
   ) {}
 
-  deactivate(): UserRoutine {
-    return new UserRoutine(
-      this.id,
-      this.usuario_id,
-      this.rutina_id,
-      this.assignedAt,
-      false,
-      this.createdAt
-    );
+  // Métodos helper si los necesitas
+  isActiveOnDay(day: string): boolean {
+    return this.dias.includes(day.toUpperCase());
   }
 
-  activate(): UserRoutine {
-    return new UserRoutine(
-      this.id,
-      this.usuario_id,
-      this.rutina_id,
-      this.assignedAt,
-      true,
-      this.createdAt
-    );
+  getTotalExercises(): number {
+    return this.ejercicios.length;
+  }
+
+  getTotalFoods(): number {
+    return this.alimentos.length;
   }
 }

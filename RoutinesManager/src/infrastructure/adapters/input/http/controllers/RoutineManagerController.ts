@@ -16,7 +16,7 @@ export class RoutineManagerController {
       }
 
       const userRoutine = await this.routineManagerService.assignRoutine(usuario_id, rutina_id);
-      res.status(201).json(userRoutine);
+      res.status(200).json(userRoutine);
     } catch (error: any) {
       res.status(400).json({ error: error.message });
     }
