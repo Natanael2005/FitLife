@@ -11,7 +11,4 @@ export class Allergy {
 
   @Column('varchar', { length: 100 })
   name!: string;
-
-  @Column('text', { nullable: true })
-  description?: string | null;
 }

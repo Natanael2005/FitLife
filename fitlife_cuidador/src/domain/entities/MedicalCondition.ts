@@ -12,6 +12,5 @@ export class MedicalCondition {
   @Column('varchar', { length: 120 })
   name!: string;
 
-  @Column('text', { nullable: true })
-  description?: string | null;
+
 }
