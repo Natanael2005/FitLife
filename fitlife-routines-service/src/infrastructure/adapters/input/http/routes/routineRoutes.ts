@@ -8,7 +8,7 @@ export const routineRoutes = (controller: RoutineController) => {
   // Privadas
   r.post('/rutinas', controller.create);
   r.get('/rutinas', controller.listByUser); // ?usuarioId=
-  r.get('/rutinas/:id', controller.get);     // ?usuarioId=
+  r.get('/rutinas/:id/', controller.get);     // ?usuarioId=
   r.patch('/rutinas/:id', controller.update);// ?usuarioId=
   r.delete('/rutinas/:id', controller.remove);// ?usuarioId=
 
