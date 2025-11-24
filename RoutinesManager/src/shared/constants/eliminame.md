@@ -1,0 +1,1 @@
+# src/shared/constants\n\n📂 Constantes globales. Valores inmutables usados en toda la aplicación (ej: códigos de error, nombres de eventos, estados HTTP).\n\n## 📘 Notas adicionales\n- Esta carpeta es parte de la arquitectura hexagonal.\n- Se debe eliminar este archivo al implementar el código real.\n- Mantener separación estricta de responsabilidades.

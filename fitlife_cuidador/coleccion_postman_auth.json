@@ -1,0 +1,97 @@
+{
+  "info": {
+    "name": "FitLife — Auth (register/login/profile)",
+    "_postman_id": "6f8b9b2b-7a1f-4a3e-9f0a-9f4e6d3b6c21",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:3006" },
+    { "key": "idToken", "value": "" },
+    { "key": "localId", "value": "" },
+    { "key": "userId", "value": "" },
+    { "key": "email", "value": "" }
+  ],
+  "item": [
+    {
+      "name": "Auth — Register",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "url": { "raw": "{{baseUrl}}/api/auth/register" },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"victoralexis@gmail.com\",\n  \"password\": \"123456\",\n  \"firstName\": \"Diego\",\n  \"lastName\": \"Pedraza\",\n  \"gender\": \"masculino\",\n  \"returnSecureToken\": true\n}"
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('status 201/200', function(){ pm.expect([200,201]).to.include(pm.response.code); });",
+              "const j = pm.response.json();",
+              "if (j.idToken) pm.collectionVariables.set('idToken', j.idToken);",
+              "if (j.localId) pm.collectionVariables.set('localId', j.localId);",
+              "if (j.userId) pm.collectionVariables.set('userId', j.userId);",
+              "if (j.email) pm.collectionVariables.set('email', j.email);"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Auth — Login",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "url": { "raw": "{{baseUrl}}/api/auth/login" },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"victoralexis@gmail.com\",\n  \"password\": \"123456\",\n  \"returnSecureToken\": true\n}"
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('status 200', function(){ pm.response.to.be.ok; });",
+              "const j = pm.response.json();",
+              "if (j.idToken) pm.collectionVariables.set('idToken', j.idToken);",
+              "if (j.localId) pm.collectionVariables.set('localId', j.localId);",
+              "if (j.userId) pm.collectionVariables.set('userId', j.userId);",
+              "if (j.email) pm.collectionVariables.set('email', j.email);"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Auth — Profile (Bearer)",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [{ "key": "token", "value": "{{idToken}}", "type": "string" }]
+        },
+        "method": "GET",
+        "header": [],
+        "url": { "raw": "{{baseUrl}}/api/auth/profile" }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('status 200', function(){ pm.response.to.be.ok; });",
+              "const j = pm.response.json();",
+              "pm.expect(j).to.have.keys(['userId','email','firstName','lastName','gender','profile_completed']);"
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

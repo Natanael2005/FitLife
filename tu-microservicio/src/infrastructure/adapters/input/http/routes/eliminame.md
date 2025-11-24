@@ -1,1 +1,0 @@
-# src/infrastructure/adapters/input/http/routes\n\n📂 Rutas HTTP. Definen los endpoints y los asocian a controladores. Ejemplo: POST /rutinas -> RutinaController.create.\n\n## 📘 Notas adicionales\n- Esta carpeta es parte de la arquitectura hexagonal.\n- Se debe eliminar este archivo al implementar el código real.\n- Mantener separación estricta de responsabilidades.
